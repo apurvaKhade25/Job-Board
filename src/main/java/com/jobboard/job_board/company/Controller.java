@@ -25,15 +25,15 @@ public class Controller {
 
     @GetMapping("/history/{id}")
     public ResponseEntity <CompanyResponse> getHistory(@PathVariable Long id){
-        return ResponseEntity.ok(companyService.getHistory(id));
+        return ResponseEntity.status(201).body(companyService.getHistory(id));
     }
 
-    @GetMapping("/evrything")
+    @GetMapping("/everything")
     public ResponseEntity <List<CompanyResponse>> getEverything(){
         return ResponseEntity.ok((companyService.getEverything()));
     }
 
-    @DeleteMapping("/delete")
+    @DeleteMapping("/delete/{id}")
     public ResponseEntity <String> delete(@PathVariable Long id){
         companyService.deleteCompany(id);
         return ResponseEntity.ok("deleted");
