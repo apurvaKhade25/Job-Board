@@ -14,13 +14,13 @@ import java.util.List;
 @AllArgsConstructor
 @Entity
 @Builder
-@Table(name = "companies")
+@Table(name = "Company")
 public class Company {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
-    private String email;
+    private String description;
     private String website;
     private String location;
 
