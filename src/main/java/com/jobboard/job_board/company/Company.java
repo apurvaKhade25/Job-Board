@@ -26,6 +26,7 @@ public class Company {
     private String location;
 
     @Builder.Default
+
     @OneToMany(mappedBy = "company", cascade = CascadeType.ALL, orphanRemoval = true)       //inverse side
     private List<Job> jobs = new ArrayList<>();
 

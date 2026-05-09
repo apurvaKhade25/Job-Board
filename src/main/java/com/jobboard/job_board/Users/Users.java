@@ -20,7 +20,7 @@ public class Users {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long user_id;
+    private Long user_id;
 
     @Column(nullable = false, unique = true)
     private  String email;
@@ -34,8 +34,9 @@ public class Users {
     @Column(name = "created_At")
     private LocalDateTime created_at;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "Role")
-    private String role;
+    private Role role;
 
     @OneToMany(
             mappedBy = "users",     //The other(application) side already manages this relationship
@@ -45,5 +46,10 @@ public class Users {
 
     )
     private List <Application> applications=new ArrayList<>();
+
+    @PrePersist
+    public void onCreate() {
+        this.created_at = LocalDateTime.now(); // ✅ auto-set on save
+    }
 
 }

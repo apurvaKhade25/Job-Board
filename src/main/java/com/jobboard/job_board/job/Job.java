@@ -1,10 +1,14 @@
 package com.jobboard.job_board.job;
 
+import com.jobboard.job_board.Application.Application;
+import com.jobboard.job_board.Skills.Skill;
 import com.jobboard.job_board.company.Company;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "jobs")
@@ -28,7 +32,7 @@ public class Job {
     @Column(nullable = false, length = 35)
     private String location;
 
-    @Column(nullable = false)
+    @Column(precision = 10, scale = 2)
     private BigDecimal salary;
 
     private String jobtype;     // Full-time / Part-time / Remote
@@ -36,5 +40,21 @@ public class Job {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "company_id")            //owning side
     private Company company;
+
+    @ManyToMany
+    @JoinTable(
+            name = "job_skill",
+            joinColumns = @JoinColumn(name = "job_id"),
+            inverseJoinColumns = @JoinColumn(name = "skill_id")
+    )
+    private List<Skill> skill = new ArrayList<>();
+
+    @OneToMany(
+            mappedBy = "job",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true,
+            fetch = FetchType.LAZY
+    )
+    private List<Application> applications = new ArrayList<>();
 }
 
