@@ -1,6 +1,6 @@
 package com.jobboard.job_board.Application;
 
-public enum Status {
+public enum ApplicationStatus {
     PENDING,
     REVIEWED,
     SHORTLISTED,
