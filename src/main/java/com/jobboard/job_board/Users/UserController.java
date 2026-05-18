@@ -16,6 +16,7 @@ import java.util.List;
 public class UserController {
     private final UserService userService;
 
+    // create user
     @PostMapping("/add")
     public ResponseEntity <UserResponse> CreateUser(@Valid @RequestBody UserRequest userRequest){
         return ResponseEntity.ok(userService.CreateUser(userRequest));
@@ -26,6 +27,7 @@ public class UserController {
         return ResponseEntity.ok(userService.getId(user_id));
     }
 
+    // history
     @GetMapping("/all")
     public ResponseEntity <List<UserResponse>> getAll(){
         return ResponseEntity.ok(userService.getAll());
