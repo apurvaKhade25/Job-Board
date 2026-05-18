@@ -16,11 +16,6 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 public class Application {
-
-    @ManyToOne
-    @JoinColumn(name = "job_id")
-    private Job job;
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -34,7 +29,13 @@ public class Application {
     private LocalDateTime applied_at;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JsonIgnoreProperties({"applications","company"})
+    @JsonIgnoreProperties({"applications","company","skills"})
     @JoinColumn(name = "user_id")
     private Users users;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "job_id")
+    @JsonIgnoreProperties({"applications", "company", "skills"})  // ← add this
+    private Job job;
+
 }

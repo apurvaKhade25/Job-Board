@@ -1,5 +1,6 @@
 package com.jobboard.job_board.job;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.jobboard.job_board.Application.Application;
 import com.jobboard.job_board.Skills.Skill;
 import com.jobboard.job_board.company.Company;
@@ -38,7 +39,8 @@ public class Job {
     private String jobtype;     // Full-time / Part-time / Remote
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "company_id")            //owning side
+    @JoinColumn(name = "company_id")
+    @JsonIgnoreProperties({"jobs"}) //owning side
     private Company company;
 
     @ManyToMany

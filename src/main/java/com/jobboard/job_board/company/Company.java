@@ -1,4 +1,5 @@
 package com.jobboard.job_board.company;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.jobboard.job_board.job.Job;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -27,7 +28,8 @@ public class Company {
 
     @Builder.Default
 
-    @OneToMany(mappedBy = "company", cascade = CascadeType.ALL, orphanRemoval = true)       //inverse side
+    @OneToMany(mappedBy = "company", cascade = CascadeType.ALL, orphanRemoval = true)   //inverse side
+    @JsonIgnoreProperties({"company"})
     private List<Job> jobs = new ArrayList<>();
 
 

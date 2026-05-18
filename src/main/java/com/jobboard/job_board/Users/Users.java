@@ -1,6 +1,7 @@
 package com.jobboard.job_board.Users;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.jobboard.job_board.Application.Application;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
@@ -47,6 +48,7 @@ public class Users {
             fetch = FetchType.LAZY
 
     )
+    @JsonIgnoreProperties({"users"})
     private List <Application> applications=new ArrayList<>();
 
     @PrePersist

@@ -4,7 +4,6 @@ import com.jobboard.job_board.company.Dto.CompanyRequest;
 import com.jobboard.job_board.company.Dto.CompanyResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -13,7 +12,7 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/company")
-public class Controller {
+public class CompanyController {
 
     private final CompanyService companyService;
 
