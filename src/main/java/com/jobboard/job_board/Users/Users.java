@@ -1,6 +1,7 @@
 package com.jobboard.job_board.Users;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.jobboard.job_board.Application.Application;
 import jakarta.persistence.*;
@@ -30,6 +31,7 @@ public class Users {
     @Column(name = "full_name",nullable = false)
     private String fullname;
 
+    @JsonIgnore
     @Column(name = "password", nullable = false)
     private String password;
 
@@ -48,7 +50,7 @@ public class Users {
             fetch = FetchType.LAZY
 
     )
-    @JsonIgnoreProperties({"users"})
+    @JsonIgnore
     private List <Application> applications=new ArrayList<>();
 
     @PrePersist

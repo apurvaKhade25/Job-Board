@@ -1,5 +1,6 @@
 package com.jobboard.job_board.Application;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.jobboard.job_board.Users.Users;
 import com.jobboard.job_board.job.Job;
@@ -29,13 +30,13 @@ public class Application {
     private LocalDateTime applied_at;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JsonIgnoreProperties({"applications","company","skills"})
     @JoinColumn(name = "user_id")
+    @JsonIgnoreProperties({"applications", "password","created_at","role"})
     private Users users;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "job_id")
-    @JsonIgnoreProperties({"applications", "company", "skills"})  // ← add this
+    @JsonIgnoreProperties({"applications","company","skill","skills"})
     private Job job;
 
 }

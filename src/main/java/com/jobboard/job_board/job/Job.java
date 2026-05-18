@@ -1,5 +1,6 @@
 package com.jobboard.job_board.job;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.jobboard.job_board.Application.Application;
 import com.jobboard.job_board.Skills.Skill;
@@ -51,12 +52,15 @@ public class Job {
     )
     private List<Skill> skill = new ArrayList<>();
 
+
+
     @OneToMany(
             mappedBy = "job",
             cascade = CascadeType.ALL,
             orphanRemoval = true,
             fetch = FetchType.LAZY
     )
+    @JsonIgnore
     private List<Application> applications = new ArrayList<>();
 }
 
