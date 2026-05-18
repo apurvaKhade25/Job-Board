@@ -24,18 +24,21 @@ public class ApplicationController {
     }
 
     // GET /api/applications/user/1
+    // my applications
     @GetMapping("/user/{userId}")
     public ResponseEntity <List<Application>> getByUserId(@PathVariable Long userId){
         return ResponseEntity.ok(applicationService.getApplicationsByUser(userId));
 
     }
     // GET /api/applications/job/1
+    // applicants for a job
     @GetMapping("/job/{jobId}")
     public ResponseEntity <List<Application>> getByJobId(@PathVariable Long jobId) {
         return ResponseEntity.ok(applicationService.getApplicationsByJob(jobId));
     }
 
     // PATCH /api/applications/1/status?newStatus=SHORTLISTED
+    // update status
     @PatchMapping("/{id}/status")
     public ResponseEntity<Application> updateStatus(
             @PathVariable Long id,
@@ -44,6 +47,7 @@ public class ApplicationController {
         return ResponseEntity.ok(applicationService.updateStatus(id, newStatus));
     }
 
+    // withdraw or delete
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> withdraw(@PathVariable Long id) {
         applicationService.withdraw(id);
