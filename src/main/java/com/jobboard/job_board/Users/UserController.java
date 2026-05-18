@@ -22,6 +22,7 @@ public class UserController {
         return ResponseEntity.ok(userService.CreateUser(userRequest));
     }
 
+    // get user by id
     @GetMapping("/{id}")
     public ResponseEntity <UserResponse> getId(@PathVariable("id") Long user_id){
         return ResponseEntity.ok(userService.getId(user_id));
