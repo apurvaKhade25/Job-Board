@@ -9,11 +9,11 @@ import java.util.List;
 public interface ApplicationRepo extends JpaRepository<Application, Long> {
 
     //all application by a specific user
-    List<Application> findByUserId(Long userId);
+    List<Application> findByUsersId(Long userId);
 
     // all applications for a specific job
     List<Application> findByJobId(Long jobId);
 
     // check if user already applied to a job
-    boolean existsByUserIdAndJobId(Long userId, Long jobId);
+    boolean existsByUsersIdAndJobId(Long userId, Long jobId);
 }

@@ -11,8 +11,7 @@ public class UserResponse {
 
     private Long user_id;
 
-
-    private String fullname;
+    private String fullName;
 
     private Role role;
 

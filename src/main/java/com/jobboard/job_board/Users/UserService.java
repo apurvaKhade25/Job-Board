@@ -19,7 +19,7 @@ public class UserService {
         Users users=Users.builder()
                 .email(userrequest.getEmail())
                 .password(userrequest.getPassword())
-                .fullname(userrequest.getFullname())
+                .fullname(userrequest.getFullName())
                 .role(userrequest.getRole()).
                 build();
 
@@ -41,9 +41,9 @@ public class UserService {
 
     public UserResponse touserResponse(Users u){
         UserResponse response= new UserResponse();
-        response.setUser_id(u.getUser_id());
+        response.setUser_id(u.getId());
         response.setEmail(u.getEmail());
-        response.setFullname(u.getFullname());
+        response.setFullName(u.getFullname());
         response.setRole(u.getRole());
         return response;
     }

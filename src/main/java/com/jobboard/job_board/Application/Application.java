@@ -1,5 +1,6 @@
 package com.jobboard.job_board.Application;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.jobboard.job_board.Users.Users;
 import com.jobboard.job_board.job.Job;
 import jakarta.persistence.*;
@@ -33,6 +34,7 @@ public class Application {
     private LocalDateTime applied_at;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JsonIgnoreProperties({"applications","company"})
     @JoinColumn(name = "user_id")
     private Users users;
 }

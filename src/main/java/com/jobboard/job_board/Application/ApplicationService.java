@@ -32,7 +32,7 @@ public class ApplicationService {
                 .orElseThrow(() -> new RuntimeException("Job not found: " + jobId));
 
         // check already applied — uses your existsByUserIdAndJobId query
-        boolean alreadyApplied = applicationRepo.existsByUserIdAndJobId(userId, jobId);
+        boolean alreadyApplied = applicationRepo.existsByUsersIdAndJobId(userId, jobId);
         if (alreadyApplied) {
             throw new RuntimeException("User already applied to this job");
         }
@@ -50,7 +50,7 @@ public class ApplicationService {
 
     // 2. Get all applications by a user
     public List<Application> getApplicationsByUser(Long userId) {
-        return applicationRepo.findByUserId(userId);
+        return applicationRepo.findByUsersId(userId);
     }
 
     // 3. Get all applications for a job (recruiter view)

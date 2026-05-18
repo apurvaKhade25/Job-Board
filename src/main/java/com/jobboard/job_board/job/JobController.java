@@ -11,7 +11,7 @@ import java.util.List;
 
 
 @RestController()
-@RequestMapping("/job")
+@RequestMapping("/api/jobs")
 @RequiredArgsConstructor
 public class JobController {
     private final JobService jobService;

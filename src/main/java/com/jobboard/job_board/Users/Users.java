@@ -3,6 +3,7 @@ package com.jobboard.job_board.Users;
 
 import com.jobboard.job_board.Application.Application;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -20,7 +21,7 @@ public class Users {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long user_id;
+    private Long id;
 
     @Column(nullable = false, unique = true)
     private  String email;
@@ -36,6 +37,7 @@ public class Users {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "Role")
+    @NotNull
     private Role role;
 
     @OneToMany(
