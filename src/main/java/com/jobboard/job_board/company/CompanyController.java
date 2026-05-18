@@ -11,23 +11,23 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/company")
+@RequestMapping("/api/companies")
 public class CompanyController {
 
     private final CompanyService companyService;
 
-    @PostMapping("/add")
+    @PostMapping()
     public ResponseEntity <CompanyResponse> createCompany(@Valid @RequestBody CompanyRequest companyRequest){
         return ResponseEntity.status(201).body(companyService.createCompany(companyRequest));
 
     }
 
-    @GetMapping("/history/{id}")
+    @GetMapping("/{id}")
     public ResponseEntity <CompanyResponse> getHistory(@PathVariable Long id){
         return ResponseEntity.status(201).body(companyService.getHistory(id));
     }
 
-    @GetMapping("/everything")
+    @GetMapping()
     public ResponseEntity <List<CompanyResponse>> getEverything(){
         return ResponseEntity.ok((companyService.getEverything()));
     }
