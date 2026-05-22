@@ -2,11 +2,16 @@ package com.jobboard.job_board.job;
 
 import com.jobboard.job_board.company.Company;
 import com.jobboard.job_board.company.CompanyRepo;
+import com.jobboard.job_board.job.dto.JobPageResponse;
 import com.jobboard.job_board.job.dto.JobRequestDTO;
 import com.jobboard.job_board.job.dto.JobResponseDTO;
 import jakarta.transaction.Transactional;
 import lombok.Builder;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
@@ -62,8 +67,6 @@ public class JobService {
         jobRepo.deleteById(id);
     }
 
-
-
     public JobResponseDTO jobResponseDTO(Job j) {
         JobResponseDTO responseDTO = new JobResponseDTO();
         responseDTO.setId(j.getId());
@@ -75,6 +78,82 @@ public class JobService {
         responseDTO.setCompanyName(j.getCompany().getName());
         responseDTO.setCompanyId(j.getCompany().getId());
         return responseDTO;
+    }
+
+    public JobPageResponse getAlljobsPaginated(int page, int size, String sortBy, String sortDir){
+        Sort sort = sortDir.equalsIgnoreCase("desc")
+                ? Sort.by(sortBy).descending()
+                : Sort.by(sortBy).ascending();
+
+        Pageable pageable = PageRequest.of(page,size,sort);
+
+        Page <Job> jobPage = jobRepo.findAll(pageable);
+
+        System.out.println("Content size: " + jobPage.getContent().size());
+        System.out.println("First job: " + jobPage.getContent().get(0).getTitle());
+
+        List<JobResponseDTO> jobs = jobPage.getContent()
+                .stream()
+                .map(this::jobResponseDTO)
+                .toList();
+
+        System.out.println("Mapped jobs size: " + jobs.size());
+
+        return JobPageResponse.builder()
+                .jobs(jobs)
+                .currentPage(jobPage.getNumber())
+                .totalPages(jobPage.getTotalPages())
+                .totalJobs(jobPage.getTotalElements())
+                .isFirst(jobPage.isFirst())
+                .isLast(jobPage.isLast())
+                .pageSize(jobPage.getSize())
+                .build();
+    }
+
+    public JobPageResponse searchJobs(String keyword, int page, int size) {
+
+        Pageable pageable = PageRequest.of(page, size, Sort.by("postedAt").descending());
+
+        Page<Job> jobPage = jobRepo.findByTitleContainingIgnoreCase(keyword, pageable);
+
+        List<JobResponseDTO> jobs = jobPage.getContent()
+                .stream()
+                .map(this::jobResponseDTO)
+                .toList();
+
+        return JobPageResponse.builder()
+                .jobs(jobs)
+                .currentPage(jobPage.getNumber())
+                .totalPages(jobPage.getTotalPages())
+                .totalJobs(jobPage.getTotalElements())
+                .isFirst(jobPage.isFirst())
+                .isLast(jobPage.isLast())
+                .pageSize(jobPage.getSize())
+                .build();
+    }
+
+    public JobPageResponse filterByLocation(String location, int page, int size){
+        Pageable pageable=PageRequest.of(page,size);
+
+        Page<Job> jobPage = jobRepo.findByLocation(location,pageable);
+
+        List<JobResponseDTO> jobs = jobPage.getContent()
+                .stream()
+                .map(this::jobResponseDTO)
+                .toList();
+
+        return JobPageResponse.builder()
+                .currentPage(jobPage.getNumber())
+                .totalJobs(jobPage.getTotalPages())
+                .totalJobs(jobPage.getTotalElements())
+                .isFirst(jobPage.isFirst())
+                .isLast(jobPage.isLast())
+                .pageSize(jobPage.getSize())
+                .build();
+
+
+
+
     }
 
 }
