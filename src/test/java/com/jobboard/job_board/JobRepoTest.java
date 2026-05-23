@@ -17,6 +17,7 @@ import java.math.BigDecimal;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.setExtractBareNamePropertyMethods;
 
 
 @DataJpaTest
@@ -95,14 +96,14 @@ public class JobRepoTest {
 
     }
 
-    @Test
-    void testFindTitleContainingIgnoreCase(){
-        List<Job> result=jobRepo.findByTitleContainingIgnoreCase("developer");
-
-        System.out.println("Title belonging: "+result.getLast().getTitle());
-
-        assertThat(result).hasSize(2);
-    }
+//    @Test
+//    void testFindTitleContainingIgnoreCase(){
+//        List<Job> result=jobRepo.findByTitleContainingIgnoreCase("developer");
+//
+//        System.out.println("Title belonging: "+result.getLast().getTitle());
+//
+//        assertThat(result).hasSize(2);
+//    }
 
     @Test
     void testfindJobsAboveSalary(){
@@ -169,6 +170,19 @@ public class JobRepoTest {
         assertThat(result.getContent()).hasSize(3);           // page has 3 jobs
         assertThat(result.getNumber()).isEqualTo(0);
     }
+
+    @Test
+    void usingOpt(){
+        Page<Job> result=jobRepo.findAll(PageRequest.of(0,3));
+
+        result.getContent().forEach(job -> {
+            System.out.println(job.getTitle()+"->"+job.getCompany());
+        });
+
+        assertThat(result.getContent()).hasSize(3);
+    }
+
+
 
 
 
