@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import java.util.Collections;
 import java.util.List;
 
+@Transactional
 @Service
 @RequiredArgsConstructor
 @Builder
@@ -17,7 +18,6 @@ public class CompanyService {
     private final CompanyRepo companyRepo;
 
     //create company
-    @Transactional
     public CompanyResponse createCompany(CompanyRequest request) {
         Company company = Company.builder()
                 .name(request.getName())
@@ -29,6 +29,7 @@ public class CompanyService {
     }
 
     //get history
+    @Transactional()
     public CompanyResponse getHistory(Long id) {
         Company company = companyRepo.findById(id)
                 .orElseThrow(() -> new RuntimeException("Not found with id" + id));
