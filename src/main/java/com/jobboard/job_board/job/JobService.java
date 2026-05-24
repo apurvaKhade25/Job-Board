@@ -5,14 +5,13 @@ import com.jobboard.job_board.company.CompanyRepo;
 import com.jobboard.job_board.job.dto.JobPageResponse;
 import com.jobboard.job_board.job.dto.JobRequestDTO;
 import com.jobboard.job_board.job.dto.JobResponseDTO;
-import jakarta.transaction.Transactional;
-import lombok.Builder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collections;
 import java.util.List;
@@ -21,13 +20,12 @@ import java.util.Optional;
 @Service
 @Transactional
 @RequiredArgsConstructor
-@Builder
 public class JobService {
-    public final JobRepo jobRepo;
+    private final JobRepo jobRepo;
     private final CompanyRepo companyRepo;
 
-    @Transactional
     //fetch company from companyRepo, set on job
+    //write method
     public JobResponseDTO createJob(JobRequestDTO request) {
         Company company =
                 companyRepo.findById(request.getCompanyId()).orElseThrow(()->new RuntimeException("Company id not " +
@@ -44,22 +42,25 @@ public class JobService {
     }
 
     //get job by id
+    @Transactional(readOnly = true)
     public JobResponseDTO getHistoryByid(Long id){
         Job job= jobRepo.findById(id).orElseThrow(()->new RuntimeException("Id not found: "+id));
         return jobResponseDTO(job);
     }
 
     //get all
+    @Transactional(readOnly = true)
     public List<JobResponseDTO> getHistory(){
        return jobRepo.findAll().stream().map(this::jobResponseDTO).toList();
     }
 
     //by company id
+    @Transactional(readOnly = true)
     public List<JobResponseDTO> getJobsByCompany(Long companyId){
         return jobRepo.findByCompanyId(companyId).stream().map(this::jobResponseDTO).toList();
     }
 
-    //delete
+    //delete: write method
     public void deleteJob(Long id){
         if (!jobRepo.existsById(id)){
             throw new RuntimeException("Job not found with id: "+id);
@@ -67,19 +68,8 @@ public class JobService {
         jobRepo.deleteById(id);
     }
 
-    public JobResponseDTO jobResponseDTO(Job j) {
-        JobResponseDTO responseDTO = new JobResponseDTO();
-        responseDTO.setId(j.getId());
-        responseDTO.setTitle(j.getTitle());
-        responseDTO.setDescription(j.getDescription());
-        responseDTO.setLocation(j.getLocation());
-        responseDTO.setSalary(j.getSalary());
-        responseDTO.setJobType(j.getJobtype());
-        responseDTO.setCompanyName(j.getCompany().getName());
-        responseDTO.setCompanyId(j.getCompany().getId());
-        return responseDTO;
-    }
 
+    @Transactional(readOnly = true)
     public JobPageResponse getAlljobsPaginated(int page, int size, String sortBy, String sortDir){
         Sort sort = sortDir.equalsIgnoreCase("desc")
                 ? Sort.by(sortBy).descending()
@@ -110,9 +100,11 @@ public class JobService {
                 .build();
     }
 
+
+    @Transactional(readOnly = true)
     public JobPageResponse searchJobs(String keyword, int page, int size) {
 
-        Pageable pageable = PageRequest.of(page, size, Sort.by("postedAt").descending());
+        Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
 
         Page<Job> jobPage = jobRepo.findByTitleContainingIgnoreCase(keyword, pageable);
 
@@ -132,6 +124,7 @@ public class JobService {
                 .build();
     }
 
+    @Transactional(readOnly = true)
     public JobPageResponse filterByLocation(String location, int page, int size){
         Pageable pageable=PageRequest.of(page,size);
 
@@ -150,9 +143,20 @@ public class JobService {
                 .isLast(jobPage.isLast())
                 .pageSize(jobPage.getSize())
                 .build();
+    }
 
-
-
+    // just convert entity to dto
+    public JobResponseDTO jobResponseDTO(Job j) {
+        JobResponseDTO responseDTO = new JobResponseDTO();
+        responseDTO.setId(j.getId());
+        responseDTO.setTitle(j.getTitle());
+        responseDTO.setDescription(j.getDescription());
+        responseDTO.setLocation(j.getLocation());
+        responseDTO.setSalary(j.getSalary());
+        responseDTO.setJobType(j.getJobtype());
+        responseDTO.setCompanyName(j.getCompany().getName());
+        responseDTO.setCompanyId(j.getCompany().getId());
+        return responseDTO;
 
     }
 

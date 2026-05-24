@@ -5,11 +5,11 @@ import com.jobboard.job_board.Users.UserRepo;
 import com.jobboard.job_board.Users.Users;
 import com.jobboard.job_board.job.Job;
 import com.jobboard.job_board.job.JobRepo;
-import jakarta.transaction.Transactional;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -23,7 +23,11 @@ public class ApplicationService {
     private final UserRepo usersRepo;
     private final JobRepo jobRepo;
 
-    @Transactional
+    // WRITE — covered by class level @Transactional
+    // if any step fails → entire thing rolls back
+    // user check fails → nothing saved
+    // job check fails → nothing saved
+    // duplicate check fails → nothing saved
     public ApplicationResponseDto applyToJob(Long userId, Long jobId, String resumeUrl){
         // check user exists
         Users user = usersRepo.findById(userId)
