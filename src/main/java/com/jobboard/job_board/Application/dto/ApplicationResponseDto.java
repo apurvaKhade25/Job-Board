@@ -3,14 +3,14 @@ package com.jobboard.job_board.Application.dto;
 import lombok.Builder;
 import lombok.Data;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 @Data
 @Builder
 public class ApplicationResponseDto {
     private Long id;
     private String status;
     private String resumeUrl;
-    private LocalDateTime appliedAt;
+    private LocalDate appliedAt;
     private Long jobId;
     private String jobTitle;
     private Long userId;

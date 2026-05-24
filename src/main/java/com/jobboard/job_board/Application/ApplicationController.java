@@ -54,4 +54,9 @@ public class ApplicationController {
         applicationService.withdraw(id);
         return ResponseEntity.noContent().build();
     }
+
+    @GetMapping("/all")
+    public ResponseEntity<List<ApplicationResponseDto>> getAll(){
+        return ResponseEntity.ok(applicationService.getHistory());
+    }
 }

@@ -1,12 +1,12 @@
 package com.jobboard.job_board.Application;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.jobboard.job_board.Users.Users;
 import com.jobboard.job_board.job.Job;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @NoArgsConstructor
@@ -27,7 +27,7 @@ public class Application {
 
     private String resumeUrl;
 
-    private LocalDateTime applied_at;
+    private LocalDate appliedAt;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")

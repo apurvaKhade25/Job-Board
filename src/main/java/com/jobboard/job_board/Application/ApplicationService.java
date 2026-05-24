@@ -5,18 +5,18 @@ import com.jobboard.job_board.Users.UserRepo;
 import com.jobboard.job_board.Users.Users;
 import com.jobboard.job_board.job.Job;
 import com.jobboard.job_board.job.JobRepo;
+import com.jobboard.job_board.job.dto.JobResponseDTO;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-@Getter
-@Setter
 @Transactional
 public class ApplicationService {
     private final ApplicationRepo applicationRepo;
@@ -49,17 +49,20 @@ public class ApplicationService {
                 .job(job)
                 .resumeUrl(resumeUrl)
                 .status(ApplicationStatus.PENDING)  // default
+                .appliedAt(LocalDate.now())
                 .build();
 
         return mapToDto(applicationRepo.save(application));
     }
 
     // 2. Get all applications by a user
+    @Transactional(readOnly = true)
     public List<ApplicationResponseDto> getApplicationsByUser(Long userId) {
         return applicationRepo.findByUsersId(userId).stream().map(this::mapToDto).toList();
     }
 
     // 3. Get all applications for a job (recruiter view)
+    @Transactional(readOnly = true)
     public List<ApplicationResponseDto> getApplicationsByJob(Long jobId) {
         return applicationRepo.findByJobId(jobId).stream().map(this::mapToDto).toList();
     }
@@ -71,12 +74,10 @@ public class ApplicationService {
                 .orElseThrow(() -> new RuntimeException("Application not found: " + applicationId));
 
         application.setStatus(newStatus);
-        return mapToDto(applicationRepo.save(application));  // @Transactional makes this optional
-        // but explicit is clearer for now
+        return mapToDto(application);  // @Transactional makes this optional
     }
 
     // 5. Withdraw application
-    @Transactional
     public void withdraw(Long applicationId) {
         if (!applicationRepo.existsById(applicationId)) {
             throw new RuntimeException("Application not found: " + applicationId);
@@ -84,13 +85,19 @@ public class ApplicationService {
         applicationRepo.deleteById(applicationId);
     }
 
+    // get all applications
+    public List<ApplicationResponseDto> getHistory(){
+        return applicationRepo.findAll().stream().map(this::mapToDto).toList();
+    }
+
+
     //dto mapper
     private ApplicationResponseDto mapToDto(Application app){
         return ApplicationResponseDto.builder()
                 .id(app.getId())
                 .status(app.getStatus().name())
                 .resumeUrl(app.getResumeUrl())
-                .appliedAt(app.getApplied_at())
+                .appliedAt(app.getAppliedAt())
                 .jobId(app.getJob().getId())
                 .jobTitle(app.getJob().getTitle())
                 .userId(app.getUsers().getId())
