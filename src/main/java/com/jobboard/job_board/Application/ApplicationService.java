@@ -1,6 +1,8 @@
 package com.jobboard.job_board.Application;
 
 import com.jobboard.job_board.Application.dto.ApplicationResponseDto;
+import com.jobboard.job_board.Exception.DuplicateApplicationException;
+import com.jobboard.job_board.Exception.ResourceNotFoundException;
 import com.jobboard.job_board.Users.UserRepo;
 import com.jobboard.job_board.Users.Users;
 import com.jobboard.job_board.job.Job;
@@ -31,16 +33,16 @@ public class ApplicationService {
     public ApplicationResponseDto applyToJob(Long userId, Long jobId, String resumeUrl){
         // check user exists
         Users user = usersRepo.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found: " + userId));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found: " + userId));
 
         // check job exists
         Job job = jobRepo.findById(jobId)
-                .orElseThrow(() -> new RuntimeException("Job not found: " + jobId));
+                .orElseThrow(() -> new ResourceNotFoundException("Job not found: " + jobId));
 
         // check already applied — uses your existsByUserIdAndJobId query
         boolean alreadyApplied = applicationRepo.existsByUsersIdAndJobId(userId, jobId);
         if (alreadyApplied) {
-            throw new RuntimeException("User already applied to this job");
+            throw new DuplicateApplicationException("User already applied to this job");
         }
 
         // build and save
@@ -71,7 +73,7 @@ public class ApplicationService {
     @Transactional
     public ApplicationResponseDto updateStatus(Long applicationId, ApplicationStatus newStatus) {
         Application application = applicationRepo.findById(applicationId)
-                .orElseThrow(() -> new RuntimeException("Application not found: " + applicationId));
+                .orElseThrow(() -> new ResourceNotFoundException("Application not found: " + applicationId));
 
         application.setStatus(newStatus);
         return mapToDto(application);  // @Transactional makes this optional
@@ -80,7 +82,7 @@ public class ApplicationService {
     // 5. Withdraw application
     public void withdraw(Long applicationId) {
         if (!applicationRepo.existsById(applicationId)) {
-            throw new RuntimeException("Application not found: " + applicationId);
+            throw new ResourceNotFoundException("Application not found: " + applicationId);
         }
         applicationRepo.deleteById(applicationId);
     }

@@ -1,11 +1,12 @@
 package com.jobboard.job_board.company;
 
+import com.jobboard.job_board.Exception.ResourceNotFoundException;
 import com.jobboard.job_board.company.Dto.CompanyRequest;
 import com.jobboard.job_board.company.Dto.CompanyResponse;
-import jakarta.transaction.Transactional;
 import lombok.Builder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collections;
 import java.util.List;
@@ -13,7 +14,6 @@ import java.util.List;
 @Transactional
 @Service
 @RequiredArgsConstructor
-@Builder
 public class CompanyService {
     private final CompanyRepo companyRepo;
 
@@ -29,15 +29,16 @@ public class CompanyService {
     }
 
     //get history
-    @Transactional()
+    @Transactional(readOnly = true )
     public CompanyResponse getHistory(Long id) {
         Company company = companyRepo.findById(id)
-                .orElseThrow(() -> new RuntimeException("Not found with id" + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Not found with id" + id));
         return toResponse(company);
 
     }
 
     //get all
+    @Transactional(readOnly = true)
     public List<CompanyResponse> getEverything() {
         return companyRepo.findAll()
                 .stream()
@@ -48,7 +49,7 @@ public class CompanyService {
     //delete
     public void deleteCompany(Long id) {
         if (!companyRepo.existsById(id)) {
-            throw new RuntimeException("Company not found with id: " + id);
+            throw new ResourceNotFoundException("Company not found with id: " + id);
         }
         companyRepo.deleteById(id);
     }
@@ -58,7 +59,7 @@ public class CompanyService {
         CompanyResponse response = new CompanyResponse();
         response.setId(c.getId());
         response.setName(c.getName());
-        response.setEmail(c.getName());
+        response.setEmail(c.getEmail());
         response.setWebsite(c.getWebsite());
         response.setLocation(c.getLocation());
         return response;

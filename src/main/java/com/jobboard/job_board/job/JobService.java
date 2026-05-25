@@ -1,5 +1,6 @@
 package com.jobboard.job_board.job;
 
+import com.jobboard.job_board.Exception.ResourceNotFoundException;
 import com.jobboard.job_board.company.Company;
 import com.jobboard.job_board.company.CompanyRepo;
 import com.jobboard.job_board.job.dto.JobPageResponse;
@@ -25,7 +26,7 @@ public class JobService {
     //write method
     public JobResponseDTO createJob(JobRequestDTO request) {
         Company company =
-                companyRepo.findById(request.getCompanyId()).orElseThrow(()->new RuntimeException("Company id not " +
+                companyRepo.findById(request.getCompanyId()).orElseThrow(()->new ResourceNotFoundException("Company id not " +
                         "found: "+request.getCompanyId()));
         Job job = Job.builder()
                 .title(request.getTitle())
@@ -41,7 +42,7 @@ public class JobService {
     //get job by id
     @Transactional(readOnly = true)
     public JobResponseDTO getHistoryByid(Long id){
-        Job job= jobRepo.findById(id).orElseThrow(()->new RuntimeException("Id not found: "+id));
+        Job job= jobRepo.findById(id).orElseThrow(()->new ResourceNotFoundException("Id not found: "+id));
         return jobResponseDTO(job);
     }
 
@@ -60,7 +61,7 @@ public class JobService {
     //delete: write method
     public void deleteJob(Long id){
         if (!jobRepo.existsById(id)){
-            throw new RuntimeException("Job not found with id: "+id);
+            throw new ResourceNotFoundException("Job not found with id: "+id);
         }
         jobRepo.deleteById(id);
     }
@@ -134,7 +135,7 @@ public class JobService {
 
         return JobPageResponse.builder()
                 .currentPage(jobPage.getNumber())
-                .totalJobs(jobPage.getTotalPages())
+                .totalPages(jobPage.getTotalPages())
                 .totalJobs(jobPage.getTotalElements())
                 .isFirst(jobPage.isFirst())
                 .isLast(jobPage.isLast())
