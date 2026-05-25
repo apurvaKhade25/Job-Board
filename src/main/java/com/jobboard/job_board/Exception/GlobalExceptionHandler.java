@@ -36,14 +36,15 @@ public class GlobalExceptionHandler {
                         .build());
     }
 
+    //Handles error from dtos
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> handleValidation(
             MethodArgumentNotValidException ex,
             HttpServletRequest request
     ) {
-        String message = ex.getBindingResult()
-                .getFieldErrors()
-                .stream()
+        String message = ex.getBindingResult()// Contains all validation errors
+                .getFieldErrors()               // get all fields with errors
+                .stream()                       // transforms into readable message
                 .map(err -> err.getField() + ": " + err.getDefaultMessage())
                 .findFirst()
                 .orElse("Validation failed");
@@ -56,6 +57,7 @@ public class GlobalExceptionHandler {
                         .timestamp(LocalDateTime.now())
                         .build());
     }
+
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity <ErrorResponse> handleDuplicate(Exception exception,
