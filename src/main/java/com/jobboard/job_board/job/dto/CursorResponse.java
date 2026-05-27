@@ -12,5 +12,4 @@ public class CursorResponse {
     private Long nextCursor;
     private int pageSize;
     private boolean hasMore;
-
 }

@@ -73,5 +73,7 @@ public class JobController {
         return ResponseEntity.ok(jobService.filterByLocation(location, page, size));
     }
 
+
+
 }
 

@@ -64,6 +64,13 @@ public interface JobRepo extends JpaRepository<Job, Long> {
     @Query("SELECT j FROM job WHERE j.id>: CURSOR ORDER BY j.id ASC")
     List<Job> findJobsByCursor(@Param("cursor") Long Cursor, Pageable pageable); //no offset
 
+    // first page — no cursor yet
+    @EntityGraph(attributePaths = {"company"})
+    @Query("SELECT j FROM Job j ORDER BY j.id ASC")
+    List<Job> findFirstPage(Pageable pageable);
+
+    // check if more exist
+    boolean existsByIdGreaterThan(Long id);
 
 
 
