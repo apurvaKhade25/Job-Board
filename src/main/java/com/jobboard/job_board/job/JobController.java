@@ -49,6 +49,7 @@ public class JobController {
         return ResponseEntity.ok("deleted");
     }
 
+//    offset pagination
     @GetMapping("/all")
     public ResponseEntity<JobPageResponse> getAllJobs(@RequestParam(defaultValue = "0") int page,
                                                       @RequestParam(defaultValue = "3") int size,
