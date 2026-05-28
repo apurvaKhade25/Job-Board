@@ -1,5 +1,6 @@
 package com.jobboard.job_board.job;
 
+import com.jobboard.job_board.job.dto.CursorResponse;
 import com.jobboard.job_board.job.dto.JobPageResponse;
 import com.jobboard.job_board.job.dto.JobRequestDTO;
 import com.jobboard.job_board.job.dto.JobResponseDTO;
@@ -49,7 +50,7 @@ public class JobController {
         return ResponseEntity.ok("deleted");
     }
 
-//    offset pagination
+    //    offset pagination
     @GetMapping("/all")
     public ResponseEntity<JobPageResponse> getAllJobs(@RequestParam(defaultValue = "0") int page,
                                                       @RequestParam(defaultValue = "3") int size,
@@ -69,11 +70,17 @@ public class JobController {
     @GetMapping("/location")
     public ResponseEntity<JobPageResponse> searchLocation(@RequestParam String location,
                                                           @RequestParam(defaultValue = "0") int page,
-                                                          @RequestParam(defaultValue = "10") int size){
+                                                          @RequestParam(defaultValue = "10") int size) {
         return ResponseEntity.ok(jobService.filterByLocation(location, page, size));
     }
 
 
+    @GetMapping("/cursor")
+    public ResponseEntity<CursorResponse> getJobsCursor(@RequestParam(required = false) Long cursor,
+                                                        @RequestParam(defaultValue = "3") int
+                                                                size){
+        return ResponseEntity.ok(jobService.getJobsCursor(cursor, size));
+    }
 
 }
 

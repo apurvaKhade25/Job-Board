@@ -154,7 +154,7 @@ public class JobService {
             jobs = jobRepo.findFirstPage(pageable);
         } else {
             jobs = jobRepo.findJobsByCursor(cursor, pageable);
-
+        }
             List<JobResponseDTO> dtos = jobs.stream().map(this::jobResponseDTO).toList();
             Long nextCursor = jobs.isEmpty() ? null :
                     jobs.get(jobs.size() - 1).getId();
@@ -168,7 +168,7 @@ public class JobService {
                     .pageSize(size)
                     .build();
 
-        }
+
     }
 
     // just convert entity to dto

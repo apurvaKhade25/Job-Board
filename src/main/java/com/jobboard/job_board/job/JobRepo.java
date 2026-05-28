@@ -10,7 +10,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import java.awt.*;
 import java.math.BigDecimal;
 import java.util.List;
 
@@ -61,7 +60,7 @@ public interface JobRepo extends JpaRepository<Job, Long> {
     Page<Job> findAll(Pageable pageable);
 
     @EntityGraph(attributePaths = {"company"})   // while fetching jobs also load the company data
-    @Query("SELECT j FROM job WHERE j.id>: CURSOR ORDER BY j.id ASC")
+    @Query("SELECT j FROM Job j WHERE j.id> :cursor ORDER BY j.id ASC")
     List<Job> findJobsByCursor(@Param("cursor") Long Cursor, Pageable pageable); //no offset
 
     // first page — no cursor yet
