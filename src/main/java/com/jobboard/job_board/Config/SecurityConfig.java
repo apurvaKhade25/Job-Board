@@ -1,6 +1,5 @@
-package com.jobboard.job_board.Users.Config;
+package com.jobboard.job_board.Config;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -18,7 +17,7 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())           // disable CSRF for API
                 .authorizeHttpRequests(auth -> auth
-                        .anyRequest().permitAll()           // allow for now
+                        .anyRequest().authenticated()       // allow for now
                 );
         return http.build();
     }
