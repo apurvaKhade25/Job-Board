@@ -1,4 +1,4 @@
-package com.jobboard.job_board.Util;
+package com.jobboard.job_board.Auth;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -28,6 +28,7 @@ public class JavaUtil {
 
     public String generateToken(String email, String role) {
         Map<String, Object> claims = new HashMap<>();
+        claims.put("role",role);
         return Jwts.builder()
                 .setClaims(claims)
                 .setSubject(email)
@@ -37,6 +38,8 @@ public class JavaUtil {
                 .compact();
     }
 
+
+    //    JWT string → data (verify + decode)
     public Claims extractAllClaims(String token) {           //JWT string → data (verify + decode)
         return Jwts.parserBuilder()                         // start with building a parser
                 .setSigningKey(getSigningKey())             //tell it your secret key
@@ -47,18 +50,30 @@ public class JavaUtil {
     }
 
     // extract email
-    public String extractEmail(String token){
+    public String extractEmail(String token) {
         return extractAllClaims(token).getSubject();
     }
 
-    public String extractRole(String token){
-        return extractAllClaims(token).get("role",String.class);
+    // get role from token
+    public String extractRole(String token) {
+        return extractAllClaims(token).get("role", String.class);
     }
 
-    public Date extractExpiration(String token){
+    // get expiry date from token
+    public Date extractExpiration(String token) {
         return extractAllClaims(token).getExpiration();
     }
 
+    // check if token is expired
+    private boolean isTokenExpired(String token) {
+        return extractExpiration(token).before(new Date());
+    }
+
+    // validate token — email matches + not expired
+    public boolean validateToken(String token, String email) {
+        String extractedEmail = extractEmail(token);
+        return extractedEmail.equals(email) && !isTokenExpired(token);
+    }
 
 
 }
