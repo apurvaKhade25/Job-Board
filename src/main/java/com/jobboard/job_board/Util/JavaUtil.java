@@ -1,12 +1,12 @@
 package com.jobboard.job_board.Util;
 
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.util.Date;
 import java.util.HashMap;
@@ -35,7 +35,30 @@ public class JavaUtil {
                 .setExpiration(new Date(System.currentTimeMillis() + expiration))
                 .signWith(getSigningKey(), SignatureAlgorithm.HS256)
                 .compact();
+    }
+
+    public Claims extractAllClaims(String token) {           //JWT string → data (verify + decode)
+        return Jwts.parserBuilder()                         // start with building a parser
+                .setSigningKey(getSigningKey())             //tell it your secret key
+                .build()                                    // built the parser
+                .parseClaimsJws(token)                      //parse + extract calims
+                .getBody();                                 // get the payload (claims)
 
     }
+
+    // extract email
+    public String extractEmail(String token){
+        return extractAllClaims(token).getSubject();
+    }
+
+    public String extractRole(String token){
+        return extractAllClaims(token).get("role",String.class);
+    }
+
+    public Date extractExpiration(String token){
+        return extractAllClaims(token).getExpiration();
+    }
+
+
 
 }
