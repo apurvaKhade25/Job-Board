@@ -13,7 +13,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Component
-public class JavaUtil {
+public class JwtFilter {
     @Value("${jwt.secret}")
     private String secret;
 
@@ -42,7 +42,8 @@ public class JavaUtil {
     //    JWT string → data (verify + decode)
     public Claims extractAllClaims(String token) {           //JWT string → data (verify + decode)
         return Jwts.parserBuilder()                         // start with building a parser
-                .setSigningKey(getSigningKey())             //tell it your secret key
+                .setSigningKey(getSigningKey())
+                //tell it your secret key
                 .build()                                    // built the parser
                 .parseClaimsJws(token)                      //parse + extract calims
                 .getBody();                                 // get the payload (claims)

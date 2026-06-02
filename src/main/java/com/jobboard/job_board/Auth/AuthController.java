@@ -22,7 +22,7 @@ public class AuthController {
 
     public final UserRepo userRepo;
     public final PasswordEncoder passwordEncoder;
-    public final JavaUtil javaUtil;
+    public final JwtFilter jwtFilter;
 
     @PostMapping("/register")
     public ResponseEntity<AuthResponse> register(@RequestBody UserRequest userRequest){
@@ -39,7 +39,7 @@ public class AuthController {
                 .build();
         userRepo.save(users);
 
-        String token = javaUtil.generateToken(users.getEmail(), userRequest.getRole().name());
+        String token = jwtFilter.generateToken(users.getEmail(), userRequest.getRole().name());
 
 
         return ResponseEntity.status(HttpStatus.CREATED).body(new AuthResponse(token, users.getEmail(),
@@ -53,7 +53,7 @@ public class AuthController {
                 "email or password"));
 
 
-        String token = javaUtil.generateToken(users.getEmail(),users.getRole().name());
+        String token = jwtFilter.generateToken(users.getEmail(),users.getRole().name());
 
         return ResponseEntity.status(HttpStatus.CREATED).body(new AuthResponse(token,users.getEmail(),
                 users.getRole().name()));
