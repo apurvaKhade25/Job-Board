@@ -32,11 +32,14 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             FilterChain filterChain)
             throws ServletException, IOException {
 
+        System.out.println("===== JWT FILTER RUNNING =====");
         // 1. get authorization header
         String authHeader= request.getHeader("Authorization");
 
+        System.out.println("Header = " + authHeader);
+
         // 2. check header exists and starts with "Bearer "
-        if (authHeader!=null && authHeader.startsWith("Bearer ")){
+        if (authHeader==null || authHeader.startsWith("Bearer ")){
             filterChain.doFilter(request,response);     // skip if no token
             return;
         }
@@ -44,7 +47,13 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         // 3. extract token (remove "Bearer " prefix)
         String token=authHeader.substring(7);
 
+        System.out.println("Token = " + token);
+
         String email=jwtFilter.extractEmail(token);
+
+        System.out.println("Email from token = " + email);
+
+
 
         // 5. check email exists and user not already authenticated
         if (email!=null && SecurityContextHolder.getContext().getAuthentication()==null){
@@ -54,6 +63,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
             // 7. extract role and create authority
             if (users!=null && jwtFilter.validateToken(token,email)){
+                System.out.println("Token validation SUCCESS");
                 String role= jwtFilter.extractRole(token);
                 SimpleGrantedAuthority authority=new SimpleGrantedAuthority("ROLE_"+role);
 
@@ -69,6 +79,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
                 // 10. set in SecurityContext
                 SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+                System.out.println("Authentication stored in SecurityContext");
             }
         }
         filterChain.doFilter(request,response);

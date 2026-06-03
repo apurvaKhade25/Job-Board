@@ -76,5 +76,4 @@ public class JwtFilter {
         return extractedEmail.equals(email) && !isTokenExpired(token);
     }
 
-
 }
