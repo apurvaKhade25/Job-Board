@@ -39,7 +39,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         System.out.println("Header = " + authHeader);
 
         // 2. check header exists and starts with "Bearer "
-        if (authHeader==null || authHeader.startsWith("Bearer ")){
+        if (authHeader==null || !authHeader.startsWith("Bearer ")){
             filterChain.doFilter(request,response);     // skip if no token
             return;
         }
