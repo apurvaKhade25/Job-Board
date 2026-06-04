@@ -15,5 +15,6 @@ public class ApplicationResponseDto {
     private String jobTitle;
     private Long userId;
     private String userName;
+    private String company;
 
 }

@@ -6,6 +6,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.security.servlet.UserDetailsServiceAutoConfiguration;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -23,12 +24,16 @@ public class UserController {
     }
 
     // get user by id
+    // both roles — any logged in user views profile
+    @PreAuthorize("hasAnyRole('RECRUITER', 'APPLICANT')")
     @GetMapping("/{id}")
     public ResponseEntity <UserResponse> getId(@PathVariable("id") Long user_id){
         return ResponseEntity.ok(userService.getId(user_id));
     }
 
     // history
+    // both roles — any logged in user views profile
+    @PreAuthorize("hasAnyRole('RECRUITER', 'APPLICANT')")
     @GetMapping("/all")
     public ResponseEntity <List<UserResponse>> getAll(){
         return ResponseEntity.ok(userService.getAll());

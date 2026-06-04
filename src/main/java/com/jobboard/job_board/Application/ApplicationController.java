@@ -38,7 +38,7 @@ public class ApplicationController {
     // GET /api/applications/job/1
     // applicants for a job
     // RECRUITER only — recruiter views applicants for their job
-    @PreAuthorize("hasRole('RECRUITER")
+    @PreAuthorize("hasRole('RECRUITER')")
     @GetMapping("/job/{jobId}")
     public ResponseEntity <List<ApplicationResponseDto>> getByJobId(@PathVariable Long jobId) {
         return ResponseEntity.ok(applicationService.getApplicationsByJob(jobId));
