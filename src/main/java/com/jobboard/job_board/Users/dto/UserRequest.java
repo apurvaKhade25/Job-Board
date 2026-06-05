@@ -22,4 +22,7 @@ public class UserRequest {
 
     @NotNull
     private Role role;
+
+    @NotNull
+    private Long companyId;
 }

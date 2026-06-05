@@ -66,6 +66,7 @@ public class ApplicationService {
     // 3. Get all applications for a job (recruiter view)
     @Transactional(readOnly = true)
     public List<ApplicationResponseDto> getApplicationsByJob(Long jobId) {
+
         return applicationRepo.findByJobId(jobId).stream().map(this::mapToDto).toList();
     }
 
