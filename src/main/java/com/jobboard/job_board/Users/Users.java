@@ -4,6 +4,7 @@ package com.jobboard.job_board.Users;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.jobboard.job_board.Application.Application;
+import com.jobboard.job_board.company.Company;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
@@ -52,6 +53,10 @@ public class Users {
     )
     @JsonIgnore
     private List <Application> applications=new ArrayList<>();
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "company_id")
+    private Company company;      // recruiter belongs to company
 
     @PrePersist
     public void onCreate() {
