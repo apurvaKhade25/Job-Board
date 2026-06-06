@@ -23,6 +23,13 @@ public class UserRequest {
     @NotNull
     private Role role;
 
-    @NotNull
     private Long companyId;
+
+    // if RECRUITER → provide company details
+    // if APPLICANT → leave null
+    private String companyName;
+    private String companyWebsite;
+    private String companyLocation;
+    private String companyDescription;
+
 }

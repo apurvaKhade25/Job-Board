@@ -22,7 +22,8 @@ public interface JobRepo extends JpaRepository<Job, Long> {
 
 //    List<Job> findByTitleContainingIgnoreCase(String keyword);
 
-    List<Job> findByCompanyId(Long companyId);
+    @EntityGraph(attributePaths = {"company"})
+    Page<Job> findByCompanyId(Long companyId,Pageable pageable);
 
     long countByLocation(String location);
 

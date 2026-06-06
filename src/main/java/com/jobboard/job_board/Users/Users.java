@@ -60,7 +60,7 @@ public class Users {
 
     @PrePersist
     public void onCreate() {
-        this.created_at = LocalDateTime.now(); // ✅ auto-set on save
+        this.created_at = LocalDateTime.now(); //  auto-set on save
     }
 
 }

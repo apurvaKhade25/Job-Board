@@ -1,5 +1,6 @@
 package com.jobboard.job_board.job;
 
+import com.jobboard.job_board.Users.Users;
 import com.jobboard.job_board.job.dto.CursorResponse;
 import com.jobboard.job_board.job.dto.JobPageResponse;
 import com.jobboard.job_board.job.dto.JobRequestDTO;
@@ -9,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -28,6 +30,23 @@ public class JobController {
         return ResponseEntity.ok(jobService.createJob(jobRequestDTO));
     }
 
+    // RECRUITER only — view their own company's jobs
+    @PreAuthorize("hasRole('RECRUITER')")
+    @GetMapping("/my-jobs")
+    public ResponseEntity<JobPageResponse> getMyJobs(
+            @AuthenticationPrincipal Users currentUser,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "id") String sortBy,
+            @RequestParam(defaultValue = "desc") String sortDir
+    ) {
+        return ResponseEntity.ok(
+                jobService.getMyJobs(currentUser.getEmail(), page, size, sortBy, sortDir)
+        );
+    }
+
+
+
     // get job by id
     //PUBLIC - Anyone can view job by id
     @GetMapping("/{id}")
@@ -45,18 +64,23 @@ public class JobController {
     //get jobs by company
     //PUBLIC - Anyone can view job by company
     @GetMapping("/Company/{companyId}")
-    public ResponseEntity<List<JobResponseDTO>> getJobsByCompany(@PathVariable Long companyId) {
-        return ResponseEntity.ok(jobService.getJobsByCompany(companyId));
+    public ResponseEntity<JobPageResponse> getJobsByCompany(@PathVariable Long companyId,
+                                                                 @RequestParam(defaultValue = "0") int page,
+                                                                 @RequestParam(defaultValue = "3") int size,
+                                                                 @RequestParam(defaultValue = "id") String sortBy,
+                                                                 @RequestParam(defaultValue = "asc")
+                                                                     String sortDir) {
+        return ResponseEntity.ok(jobService.getJobsByCompany(companyId,page, size, sortBy, sortDir));
     }
 
     // delete job
     // RECRUITER only — only recruiters can delete job
-    @PreAuthorize("hasRole('RECRUITER)")
-    @DeleteMapping("/delete/{id}")
-    public ResponseEntity<String> deleteJob(@PathVariable Long id) {
-        jobService.deleteJob(id);
-        return ResponseEntity.ok("deleted");
-    }
+//    @PreAuthorize("hasRole('RECRUITER)")
+//    @DeleteMapping("/delete/{id}")
+//    public ResponseEntity<String> deleteJob(@PathVariable Long id) {
+//        jobService.deleteJob(id);
+//        return ResponseEntity.ok("deleted");
+//    }
 
     //    offset pagination
     //PUBLIC - Anyone can view jobs

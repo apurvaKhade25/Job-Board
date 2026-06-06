@@ -25,8 +25,8 @@ public class UserService {
                 .email(userrequest.getEmail())
                 .password(passwordEncoder.encode(userrequest.getPassword()))
                 .fullname(userrequest.getFullName())
-                .role(userrequest.getRole()).
-                build();
+                .role(userrequest.getRole())
+                .build();
 
         return touserResponse(userRepo.save(users));
     }

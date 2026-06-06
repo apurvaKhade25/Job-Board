@@ -14,6 +14,7 @@ import lombok.Setter;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.nio.file.AccessDeniedException;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -30,7 +31,7 @@ public class ApplicationService {
     // user check fails → nothing saved
     // job check fails → nothing saved
     // duplicate check fails → nothing saved
-    public ApplicationResponseDto applyToJob(Long userId, Long jobId, String resumeUrl){
+    public ApplicationResponseDto applyToJob(Long userId, Long jobId, String resumeUrl) {
         // check user exists
         Users user = usersRepo.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found: " + userId));
@@ -65,8 +66,18 @@ public class ApplicationService {
 
     // 3. Get all applications for a job (recruiter view)
     @Transactional(readOnly = true)
-    public List<ApplicationResponseDto> getApplicationsByJob(Long jobId) {
+    public List<ApplicationResponseDto> getApplicationsByJob(Long jobId, String recruiter_email) throws AccessDeniedException {
 
+        //load recruiter
+        Users recruiter = usersRepo.findByEmail(recruiter_email).orElseThrow(() -> new ResourceNotFoundException(
+                "Recruiter not found" + recruiter_email));
+
+        // load job
+        Job job = jobRepo.findById(jobId).orElseThrow(() -> new ResourceNotFoundException("Job not found" + jobId));
+
+        if (!job.getCompany().getId().equals(recruiter.getCompany().getId())) {
+            throw new AccessDeniedException("You can only view your company job's");
+        }
         return applicationRepo.findByJobId(jobId).stream().map(this::mapToDto).toList();
     }
 
@@ -89,13 +100,13 @@ public class ApplicationService {
     }
 
     // get all applications
-    public List<ApplicationResponseDto> getHistory(){
+    public List<ApplicationResponseDto> getHistory() {
         return applicationRepo.findAll().stream().map(this::mapToDto).toList();
     }
 
 
     //dto mapper
-    private ApplicationResponseDto mapToDto(Application app){
+    private ApplicationResponseDto mapToDto(Application app) {
         return ApplicationResponseDto.builder()
                 .id(app.getId())
                 .status(app.getStatus().name())
@@ -108,5 +119,5 @@ public class ApplicationService {
                 .build();
     }
 
-
 }
+

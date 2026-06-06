@@ -58,7 +58,18 @@ public class GlobalExceptionHandler {
                         .build());
     }
 
-
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<ErrorResponse> handelAccess(
+        AccessDeniedException exception, HttpServletRequest request
+    ){
+        return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                .body(ErrorResponse.builder()
+                        .status(403)
+                        .message(exception.getMessage())
+                        .path(request.getRequestURI())
+                        .timestamp(LocalDateTime.now())
+                        .build());
+    }
     @ExceptionHandler(Exception.class)
     public ResponseEntity <ErrorResponse> handleDuplicate(Exception exception,
                                                           HttpServletRequest request){

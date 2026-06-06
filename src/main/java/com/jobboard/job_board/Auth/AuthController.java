@@ -43,14 +43,23 @@ public class AuthController {
                 .role(userRequest.getRole())
                 .fullname(userRequest.getFullName())
                 .build();
-        userRepo.save(users);
+//        userRepo.save(users);
 
-        if (userRequest.getRole()== Role.RECRUITER && userRequest.getCompanyId()!=null){
-            Company company =
-                    companyRepo.findById(userRequest.getCompanyId()).orElseThrow(()-> new ResourceNotFoundException(
-                            "Company Not found "+ userRequest.getCompanyId()));
+        if (userRequest.getRole()==Role.RECRUITER){
 
-            users.setCompany(company);
+            if (userRequest.getCompanyName()==null){
+                throw new RuntimeException("Recruiter must provide company details");
+            }
+
+            Company company = Company.builder()
+                    .name(userRequest.getCompanyName())
+                    .website(userRequest.getCompanyWebsite())
+                    .location(userRequest.getCompanyLocation())
+                    .description(userRequest.getCompanyDescription())
+                    .build();
+            Company savedCompany=companyRepo.save(company);
+            users.setCompany(savedCompany); // ← link recruiter to company
+
         }
         userRepo.save(users);
 

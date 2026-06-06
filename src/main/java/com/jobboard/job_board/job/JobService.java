@@ -1,6 +1,8 @@
 package com.jobboard.job_board.job;
 
 import com.jobboard.job_board.Exception.ResourceNotFoundException;
+import com.jobboard.job_board.Users.UserRepo;
+import com.jobboard.job_board.Users.Users;
 import com.jobboard.job_board.company.Company;
 import com.jobboard.job_board.company.CompanyRepo;
 import com.jobboard.job_board.job.dto.CursorResponse;
@@ -12,6 +14,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,6 +27,7 @@ import java.util.List;
 public class JobService {
     private final JobRepo jobRepo;
     private final CompanyRepo companyRepo;
+    private final UserRepo userRepo;
 
     //fetch company from companyRepo, set on job
     //write method
@@ -54,21 +59,36 @@ public class JobService {
         return jobRepo.findAll().stream().map(this::jobResponseDTO).toList();
     }
 
-    //by company id
+//    by company id
     @Transactional(readOnly = true)
-    public List<JobResponseDTO> getJobsByCompany(Long companyId) {
-        return jobRepo.findByCompanyId(companyId).stream().map(this::jobResponseDTO).toList();
+    public JobPageResponse getJobsByCompany(Long companyId,int page,int size,String sortBy, String sortDir) {
+        Sort sort = sortDir.equalsIgnoreCase("desc")
+                ? Sort.by(sortBy).descending()
+                : Sort.by(sortBy).ascending();
+
+        Pageable pageable = PageRequest.of(page, size, sort);
+
+        Page<Job> jobPage = jobRepo.findByCompanyId(companyId,pageable);
+
+        List<JobResponseDTO> jobs = jobPage.getContent()
+                .stream()
+                .map(this::jobResponseDTO)
+                .toList();
+
+
+        return JobPageResponse.builder()
+                .jobs(jobs)
+                .currentPage(jobPage.getNumber())
+                .totalPages(jobPage.getTotalPages())
+                .totalJobs(jobPage.getTotalElements())
+                .isFirst(jobPage.isFirst())
+                .isLast(jobPage.isLast())
+                .pageSize(jobPage.getSize())
+                .build();
+
     }
 
-    //delete: write method
-    public void deleteJob(Long id) {
-        if (!jobRepo.existsById(id)) {
-            throw new ResourceNotFoundException("Job not found with id: " + id);
-        }
-        jobRepo.deleteById(id);
-    }
-
-
+    //get all jobs
     @Transactional(readOnly = true)
     public JobPageResponse getAlljobsPaginated(int page, int size, String sortBy, String sortDir) {
         Sort sort = sortDir.equalsIgnoreCase("desc")
@@ -98,6 +118,39 @@ public class JobService {
                 .isLast(jobPage.isLast())
                 .pageSize(jobPage.getSize())
                 .build();
+    }
+
+    @Transactional(readOnly = true)
+    public JobPageResponse getMyJobs(String recruiterEmail,int page, int size, String sortBy, String sortDir){
+        // load recruiter
+        Users recruiter = userRepo.findByEmail(recruiterEmail)
+                .orElseThrow(() -> new ResourceNotFoundException("Recruiter not found"));
+
+        // check recruiter has company
+        if (recruiter.getCompany() == null) {
+            throw new RuntimeException("Recruiter has no company assigned");
+        }
+        Sort sort = sortDir.equalsIgnoreCase("desc")
+                    ? Sort.by(sortBy).descending()
+                    : Sort.by(sortBy).ascending();
+
+            Pageable pageable = PageRequest.of(page, size, sort);
+
+            Page<Job> jobPage = jobRepo.findByCompanyId(recruiter.getCompany().getId(),pageable);
+
+            List<JobResponseDTO> jobs=jobPage.getContent()
+                    .stream().map(this::jobResponseDTO).toList();
+
+            return JobPageResponse.builder()
+                    .jobs(jobs)
+                    .currentPage(jobPage.getNumber())
+                    .totalPages(jobPage.getTotalPages())
+                    .totalJobs(jobPage.getTotalElements())
+                    .isFirst(jobPage.isFirst())
+                    .isLast(jobPage.isLast())
+                    .pageSize(jobPage.getSize())
+                    .build();
+
     }
 
 
