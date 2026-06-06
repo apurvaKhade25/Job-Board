@@ -1,5 +1,6 @@
 package com.jobboard.job_board.job;
 
+import com.jobboard.job_board.Exception.AccessDeniedException;
 import com.jobboard.job_board.Exception.ResourceNotFoundException;
 import com.jobboard.job_board.Users.UserRepo;
 import com.jobboard.job_board.Users.Users;
@@ -60,16 +61,16 @@ public class JobService {
         return jobRepo.findAll().stream().map(this::jobResponseDTO).toList();
     }
 
-//    by company id
+    //    by company id
     @Transactional(readOnly = true)
-    public JobPageResponse getJobsByCompany(Long companyId,int page,int size,String sortBy, String sortDir) {
+    public JobPageResponse getJobsByCompany(Long companyId, int page, int size, String sortBy, String sortDir) {
         Sort sort = sortDir.equalsIgnoreCase("desc")
                 ? Sort.by(sortBy).descending()
                 : Sort.by(sortBy).ascending();
 
         Pageable pageable = PageRequest.of(page, size, sort);
 
-        Page<Job> jobPage = jobRepo.findByCompanyId(companyId,pageable);
+        Page<Job> jobPage = jobRepo.findByCompanyId(companyId, pageable);
 
         List<JobResponseDTO> jobs = jobPage.getContent()
                 .stream()
@@ -123,7 +124,7 @@ public class JobService {
 
     // jobs posted by recruiter
     @Transactional(readOnly = true)
-    public JobPageResponse getMyJobs(String recruiterEmail,int page, int size, String sortBy, String sortDir){
+    public JobPageResponse getMyJobs(String recruiterEmail, int page, int size, String sortBy, String sortDir) {
         // load recruiter
         Users recruiter = userRepo.findByEmail(recruiterEmail)
                 .orElseThrow(() -> new ResourceNotFoundException("Recruiter not found"));
@@ -133,25 +134,25 @@ public class JobService {
             throw new RuntimeException("Recruiter has no company assigned");
         }
         Sort sort = sortDir.equalsIgnoreCase("desc")
-                    ? Sort.by(sortBy).descending()
-                    : Sort.by(sortBy).ascending();
+                ? Sort.by(sortBy).descending()
+                : Sort.by(sortBy).ascending();
 
-            Pageable pageable = PageRequest.of(page, size, sort);
+        Pageable pageable = PageRequest.of(page, size, sort);
 
-            Page<Job> jobPage = jobRepo.findByCompanyId(recruiter.getCompany().getId(),pageable);
+        Page<Job> jobPage = jobRepo.findByCompanyId(recruiter.getCompany().getId(), pageable);
 
-            List<JobResponseDTO> jobs=jobPage.getContent()
-                    .stream().map(this::jobResponseDTO).toList();
+        List<JobResponseDTO> jobs = jobPage.getContent()
+                .stream().map(this::jobResponseDTO).toList();
 
-            return JobPageResponse.builder()
-                    .jobs(jobs)
-                    .currentPage(jobPage.getNumber())
-                    .totalPages(jobPage.getTotalPages())
-                    .totalJobs(jobPage.getTotalElements())
-                    .isFirst(jobPage.isFirst())
-                    .isLast(jobPage.isLast())
-                    .pageSize(jobPage.getSize())
-                    .build();
+        return JobPageResponse.builder()
+                .jobs(jobs)
+                .currentPage(jobPage.getNumber())
+                .totalPages(jobPage.getTotalPages())
+                .totalJobs(jobPage.getTotalElements())
+                .isFirst(jobPage.isFirst())
+                .isLast(jobPage.isLast())
+                .pageSize(jobPage.getSize())
+                .build();
 
     }
 
@@ -210,24 +211,38 @@ public class JobService {
         } else {
             jobs = jobRepo.findJobsByCursor(cursor, pageable);
         }
-            List<JobResponseDTO> dtos = jobs.stream().map(this::jobResponseDTO).toList();
-            Long nextCursor = jobs.isEmpty() ? null :
-                    jobs.get(jobs.size() - 1).getId();
+        List<JobResponseDTO> dtos = jobs.stream().map(this::jobResponseDTO).toList();
+        Long nextCursor = jobs.isEmpty() ? null :
+                jobs.get(jobs.size() - 1).getId();
 
-            boolean hasMore = nextCursor != null && jobRepo.existsByIdGreaterThan(nextCursor);
+        boolean hasMore = nextCursor != null && jobRepo.existsByIdGreaterThan(nextCursor);
 
-            return CursorResponse.builder()
-                    .jobs(dtos)
-                    .nextCursor(nextCursor)
-                    .hasMore(hasMore)
-                    .pageSize(size)
-                    .build();
+        return CursorResponse.builder()
+                .jobs(dtos)
+                .nextCursor(nextCursor)
+                .hasMore(hasMore)
+                .pageSize(size)
+                .build();
 
 
     }
 
-    // delete a job only recruiter can do this
-    public ResponseEntity
+    // Update job status job only recruiter can do this
+    public JobResponseDTO updateJobStatus(Long jobId, JobStatus jobStatus, String recruiter_email) {
+
+        Job job = jobRepo.findById(jobId).orElseThrow(() -> new ResourceNotFoundException("Job not found"));
+
+        Users recruiter = userRepo.findByEmail(recruiter_email).orElseThrow(() -> new ResourceNotFoundException("No " +
+                "recruiter found"));
+
+        if (!job.getCompany().getId().equals(recruiter.getCompany().getId())) {
+            throw new AccessDeniedException("Access Denied");
+        }
+
+        job.setJobStatus(jobStatus);
+        job = jobRepo.save(job);
+        return jobResponseDTO(job);
+    }
 
     // just convert entity to dto
     public JobResponseDTO jobResponseDTO(Job j) {

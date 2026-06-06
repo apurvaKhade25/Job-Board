@@ -1,12 +1,14 @@
 package com.jobboard.job_board.Application;
 
 import com.jobboard.job_board.Application.dto.ApplicationResponseDto;
+import com.jobboard.job_board.Exception.BadRequestException;
 import com.jobboard.job_board.Exception.DuplicateApplicationException;
 import com.jobboard.job_board.Exception.ResourceNotFoundException;
 import com.jobboard.job_board.Users.UserRepo;
 import com.jobboard.job_board.Users.Users;
 import com.jobboard.job_board.job.Job;
 import com.jobboard.job_board.job.JobRepo;
+import com.jobboard.job_board.job.JobStatus;
 import com.jobboard.job_board.job.dto.JobResponseDTO;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -39,6 +41,10 @@ public class ApplicationService {
         // check job exists
         Job job = jobRepo.findById(jobId)
                 .orElseThrow(() -> new ResourceNotFoundException("Job not found: " + jobId));
+
+        if(job.getJobStatus() !=JobStatus.OPEN){
+            throw new BadRequestException("Application closed! Cannot be applied");
+        }
 
         // check already applied — uses your existsByUserIdAndJobId query
         boolean alreadyApplied = applicationRepo.existsByUsersIdAndJobId(userId, jobId);

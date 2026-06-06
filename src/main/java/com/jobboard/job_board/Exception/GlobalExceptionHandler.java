@@ -70,6 +70,19 @@ public class GlobalExceptionHandler {
                         .timestamp(LocalDateTime.now())
                         .build());
     }
+
+    @ExceptionHandler(BadRequestException.class)
+    public ResponseEntity<ErrorResponse> handleBadRequest(
+            BadRequestException exception, HttpServletRequest request
+    ){
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(ErrorResponse.builder()
+                        .status(400)
+                        .message(exception.getMessage())
+                        .path(request.getRequestURI())
+                        .timestamp(LocalDateTime.now())
+                        .build());
+    }
     @ExceptionHandler(Exception.class)
     public ResponseEntity <ErrorResponse> handleDuplicate(Exception exception,
                                                           HttpServletRequest request){

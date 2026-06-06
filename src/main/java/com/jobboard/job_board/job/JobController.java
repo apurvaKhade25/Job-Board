@@ -9,6 +9,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -73,13 +74,15 @@ public class JobController {
         return ResponseEntity.ok(jobService.getJobsByCompany(companyId,page, size, sortBy, sortDir));
     }
 
-    // delete job
-    // RECRUITER only — only recruiters can delete job
-    @PreAuthorize("hasRole('RECRUITER)")
-    @DeleteMapping("/delete/{id}")
-    public ResponseEntity<String> deleteJob(@PathVariable Long id) {
-        jobService.deleteJob(id);
-        return ResponseEntity.ok("deleted");
+    // Update a job
+    // RECRUITER only — only recruiters can uodate job
+    @PreAuthorize("hasRole('RECRUITER')")
+    @PatchMapping ("/jobstatus/{id}")
+    public ResponseEntity<JobResponseDTO> updateJobByStatus(@PathVariable Long id,@RequestParam JobStatus jobStatus,
+                                                            @AuthenticationPrincipal Users current_user) {
+        String recruiterEmail=current_user.getEmail();
+        System.out.println(current_user.getClass());
+        return ResponseEntity.ok(jobService.updateJobStatus(id,jobStatus,recruiterEmail));
     }
 
     //    offset pagination

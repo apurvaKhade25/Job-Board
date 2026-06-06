@@ -1,7 +1,6 @@
 package com.jobboard.job_board.Users.dto;
 
 import com.jobboard.job_board.Users.Role;
-import com.jobboard.job_board.company.Company;
 import jakarta.validation.constraints.Email;
 import lombok.Data;
 
@@ -15,4 +14,5 @@ public class UserResponse {
     private String fullName;
 
     private Role role;
+
 }

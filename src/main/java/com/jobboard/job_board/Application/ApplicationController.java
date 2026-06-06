@@ -65,7 +65,6 @@ public class ApplicationController {
     // withdraw or delete
     // APPLICANT only — applicant withdraws own application
     @PreAuthorize("hasRole('APPLICANT')")
-
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> withdraw(@PathVariable Long id) {
         applicationService.withdraw(id);

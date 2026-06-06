@@ -39,6 +39,9 @@ public class Job {
 
     private String jobtype;     // Full-time / Part-time / Remote
 
+    @Enumerated(EnumType.STRING)
+    private JobStatus jobStatus=JobStatus.OPEN;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "company_id")
     @JsonIgnoreProperties({"jobs"}) //owning side
