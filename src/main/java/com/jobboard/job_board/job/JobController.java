@@ -75,12 +75,12 @@ public class JobController {
 
     // delete job
     // RECRUITER only — only recruiters can delete job
-//    @PreAuthorize("hasRole('RECRUITER)")
-//    @DeleteMapping("/delete/{id}")
-//    public ResponseEntity<String> deleteJob(@PathVariable Long id) {
-//        jobService.deleteJob(id);
-//        return ResponseEntity.ok("deleted");
-//    }
+    @PreAuthorize("hasRole('RECRUITER)")
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<String> deleteJob(@PathVariable Long id) {
+        jobService.deleteJob(id);
+        return ResponseEntity.ok("deleted");
+    }
 
     //    offset pagination
     //PUBLIC - Anyone can view jobs

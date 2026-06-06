@@ -14,6 +14,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -120,6 +121,7 @@ public class JobService {
                 .build();
     }
 
+    // jobs posted by recruiter
     @Transactional(readOnly = true)
     public JobPageResponse getMyJobs(String recruiterEmail,int page, int size, String sortBy, String sortDir){
         // load recruiter
@@ -153,7 +155,7 @@ public class JobService {
 
     }
 
-
+    // job searching
     @Transactional(readOnly = true)
     public JobPageResponse searchJobs(String keyword, int page, int size) {
 
@@ -223,6 +225,9 @@ public class JobService {
 
 
     }
+
+    // delete a job only recruiter can do this
+    public ResponseEntity
 
     // just convert entity to dto
     public JobResponseDTO jobResponseDTO(Job j) {
