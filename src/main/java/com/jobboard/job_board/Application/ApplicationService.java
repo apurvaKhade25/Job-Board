@@ -46,10 +46,16 @@ public class ApplicationService {
             throw new BadRequestException("Application closed! Cannot be applied");
         }
 
+
         // check already applied — uses your existsByUserIdAndJobId query
         boolean alreadyApplied = applicationRepo.existsByUsersIdAndJobId(userId, jobId);
         if (alreadyApplied) {
             throw new DuplicateApplicationException("User already applied to this job");
+        }
+
+        // check if user has uploaded resume
+        if (user.getResume_url()==null){
+            throw new BadRequestException("Please upload before applying");
         }
 
         // build and save
