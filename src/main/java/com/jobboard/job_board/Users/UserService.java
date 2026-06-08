@@ -31,6 +31,13 @@ public class UserService {
         return touserResponse(userRepo.save(users));
     }
 
+    @Transactional
+    public void UploadResume(Long userId, String resumeUrl) {
+        Users user = userRepo.findById(userId).orElseThrow(() -> new RuntimeException("User not found: " + userId));
+        user.setResume_url(resumeUrl);
+        userRepo.save(user);
+    }
+
     // loading all users, no writes
     @Transactional(readOnly = true)
     public List<UserResponse> getAll(){
