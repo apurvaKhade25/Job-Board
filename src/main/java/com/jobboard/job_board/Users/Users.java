@@ -44,6 +44,9 @@ public class Users {
     @NotNull
     private Role role;
 
+    @Column(name = "resume_url")
+    private String resume_url;
+
     @OneToMany(
             mappedBy = "users",     //The other(application) side already manages this relationship
             cascade = CascadeType.ALL,      //save user then save application too
