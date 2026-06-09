@@ -25,13 +25,14 @@ public class UserRequest {
     private Role role;
 
     //optional
-    private String resumeUrl;
+    private MultipartFile resumeUrl;
 
-    private Long companyId;
 
     // if RECRUITER → provide company details
     // if APPLICANT → leave null
+    private Long companyId;
     private String companyName;
+    private String companyEmail;
     private String companyWebsite;
     private String companyLocation;
     private String companyDescription;

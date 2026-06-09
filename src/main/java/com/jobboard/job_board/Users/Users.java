@@ -45,7 +45,7 @@ public class Users {
     private Role role;
 
     @Column(name = "resume_url")
-    private String resume_url;
+    private String resumeUrl;
 
     @OneToMany(
             mappedBy = "users",     //The other(application) side already manages this relationship

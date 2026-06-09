@@ -5,8 +5,6 @@ import com.jobboard.job_board.Users.Users;
 import com.jobboard.job_board.job.Job;
 import jakarta.persistence.*;
 import lombok.*;
-
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @NoArgsConstructor
@@ -27,8 +25,15 @@ public class Application {
 
     private String resumeUrl;
 
-    private LocalDate appliedAt;
+    private LocalDateTime appliedAt;
 
+    @PrePersist
+    public void onApply(){
+        this.appliedAt=LocalDateTime.now();
+        if (this.status==null){
+             this.status = ApplicationStatus.PENDING;
+        }
+    }
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     @JsonIgnoreProperties({"applications", "password","created_at","role"})

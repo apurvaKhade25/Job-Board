@@ -34,7 +34,7 @@ public class AuthController {
     public ResponseEntity<AuthResponse> register(@RequestBody UserRequest userRequest){
 
         if (userRepo.findByEmail(userRequest.getEmail()).isPresent()){
-            throw new RuntimeException("Email already exists"+userRequest.getEmail());
+            throw new RuntimeException("Email already exists "+userRequest.getEmail());
         }
 
         Users users = Users.builder()
@@ -53,6 +53,7 @@ public class AuthController {
 
             Company company = Company.builder()
                     .name(userRequest.getCompanyName())
+                    .email(userRequest.getCompanyEmail())
                     .website(userRequest.getCompanyWebsite())
                     .location(userRequest.getCompanyLocation())
                     .description(userRequest.getCompanyDescription())

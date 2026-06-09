@@ -4,13 +4,15 @@ import lombok.Builder;
 import lombok.Data;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+
 @Data
 @Builder
 public class ApplicationResponseDto {
     private Long id;
     private String status;
     private String resumeUrl;
-    private LocalDate appliedAt;
+    private LocalDateTime appliedAt;
     private Long jobId;
     private String jobTitle;
     private Long userId;

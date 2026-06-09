@@ -2,6 +2,8 @@ package com.jobboard.job_board.Upload;
 
 import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
+import com.jobboard.job_board.Users.UserRepo;
+import com.jobboard.job_board.Users.Users;
 import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -16,7 +18,7 @@ import java.util.UUID;
 public class FileUploadService {
 
     private final Cloudinary cloudinary;
-
+    private final UserRepo userRepo;
     public String uploadResume(MultipartFile file) {
 
         System.out.println("File name = " + file.getOriginalFilename());

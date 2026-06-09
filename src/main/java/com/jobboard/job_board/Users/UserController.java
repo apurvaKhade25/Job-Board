@@ -43,7 +43,7 @@ public class UserController {
         String email =current_users.getEmail();
 
         String resumeUrl= fileUploadService.uploadResume(file);
-        return ResponseEntity.ok(userService.uploadResume(email,resumeUrl));
+        return ResponseEntity.ok(userService.uploadResume(current_users.getEmail(),resumeUrl));
     }
 
     // history

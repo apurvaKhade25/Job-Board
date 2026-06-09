@@ -15,10 +15,13 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.nio.file.AccessDeniedException;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -33,7 +36,7 @@ public class ApplicationService {
     // user check fails → nothing saved
     // job check fails → nothing saved
     // duplicate check fails → nothing saved
-    public ApplicationResponseDto applyToJob(Long userId, Long jobId, String resumeUrl) {
+    public ApplicationResponseDto applyToJob(Long userId, Long jobId) {
         // check user exists
         Users user = usersRepo.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found: " + userId));
@@ -53,18 +56,18 @@ public class ApplicationService {
             throw new DuplicateApplicationException("User already applied to this job");
         }
 
-        // check if user has uploaded resume
-        if (user.getResume_url()==null){
-            throw new BadRequestException("Please upload before applying");
+//        // check if user has uploaded resume
+        if (user.getResumeUrl()==null){
+            throw new BadRequestException("Please upload resume before applying");
         }
 
         // build and save
         Application application = Application.builder()
                 .users(user)
                 .job(job)
-                .resumeUrl(resumeUrl)
+                .resumeUrl(user.getResumeUrl())
                 .status(ApplicationStatus.PENDING)  // default
-                .appliedAt(LocalDate.now())
+                .appliedAt(LocalDateTime.now())
                 .build();
 
         return mapToDto(applicationRepo.save(application));

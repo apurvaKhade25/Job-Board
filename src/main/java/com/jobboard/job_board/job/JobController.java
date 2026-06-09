@@ -115,7 +115,7 @@ public class JobController {
     // PUBLIC — cursor based feed
     @GetMapping("/cursor")
     public ResponseEntity<CursorResponse> getJobsCursor(@RequestParam(required = false) Long cursor,
-                                                        @RequestParam(defaultValue = "3") int
+                                                        @RequestParam(defaultValue = "1") int
                                                                 size) {
         return ResponseEntity.ok(jobService.getJobsCursor(cursor, size));
     }

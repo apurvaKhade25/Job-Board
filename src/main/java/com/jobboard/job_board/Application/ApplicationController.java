@@ -1,6 +1,7 @@
 package com.jobboard.job_board.Application;
 
 import com.jobboard.job_board.Application.dto.ApplicationResponseDto;
+import com.jobboard.job_board.Upload.FileUploadService;
 import com.jobboard.job_board.Users.Users;
 import com.jobboard.job_board.job.dto.JobResponseDTO;
 import jakarta.persistence.ManyToOne;
@@ -11,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.nio.file.AccessDeniedException;
 import java.util.List;
@@ -20,15 +22,16 @@ import java.util.List;
 @RequestMapping("/api/applications")
 public class ApplicationController {
     private final ApplicationService applicationService;
+    private final FileUploadService fileUploadService;
 
     // POST /api/applications?userId=1&jobId=2&resumeUrl=...
     @PreAuthorize("hasRole('APPLICANT')")
-    @PostMapping
-    public ResponseEntity<ApplicationResponseDto> apply(@RequestParam Long userId, @RequestParam Long jobId,
-                                                        @RequestParam String resumeUrl) {
+    @PostMapping("/{userId}")
+    public ResponseEntity<ApplicationResponseDto> apply(@PathVariable Long userId, @RequestParam Long jobId) {
+//        String resumeUrl= fileUploadService.uploadResume();
         return ResponseEntity
                 .status(HttpStatus.CREATED)
-                .body(applicationService.applyToJob(userId, jobId, resumeUrl));
+                .body(applicationService.applyToJob(userId, jobId));
     }
 
     // GET /api/applications/user/1

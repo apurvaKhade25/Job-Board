@@ -42,6 +42,13 @@ public class Job {
     @Enumerated(EnumType.STRING)
     private JobStatus jobStatus=JobStatus.OPEN;
 
+    @PrePersist
+    public void onCreate() {
+        if (this.jobStatus == null) {
+            this.jobStatus = JobStatus.OPEN;   //  always OPEN when created
+        }
+    }
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "company_id")
     @JsonIgnoreProperties({"jobs"}) //owning side

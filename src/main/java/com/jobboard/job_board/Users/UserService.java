@@ -9,6 +9,7 @@ import lombok.Builder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -35,7 +36,12 @@ public class UserService {
     @Transactional
     public UserResponse uploadResume(String email, String resumeUrl) {
         Users user = userRepo.findByEmail(email).orElseThrow(() -> new RuntimeException("User not found: " + email));
-        user.setResume_url(resumeUrl);
+        System.out.println("Inside uploadResume()");
+        System.out.println("Email = " + email);
+        System.out.println("URL = " + resumeUrl);
+        user.setResumeUrl(resumeUrl);
+        System.out.println("After setResumeUrl = " + user.getResumeUrl());
+        userRepo.save(user);
 
         return touserResponse(user);
     }

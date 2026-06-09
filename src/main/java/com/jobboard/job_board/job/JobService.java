@@ -228,11 +228,11 @@ public class JobService {
     }
 
     // Update job status job only recruiter can do this
-    public JobResponseDTO updateJobStatus(Long jobId, JobStatus jobStatus, String recruiter_email) {
+    public JobResponseDTO updateJobStatus(Long jobId, JobStatus jobStatus, String recruiterEmail) {
 
         Job job = jobRepo.findById(jobId).orElseThrow(() -> new ResourceNotFoundException("Job not found"));
 
-        Users recruiter = userRepo.findByEmail(recruiter_email).orElseThrow(() -> new ResourceNotFoundException("No " +
+        Users recruiter = userRepo.findByEmail(recruiterEmail).orElseThrow(() -> new ResourceNotFoundException("No " +
                 "recruiter found"));
 
         if (!job.getCompany().getId().equals(recruiter.getCompany().getId())) {
