@@ -9,6 +9,8 @@ import com.jobboard.job_board.Users.Users;
 import com.jobboard.job_board.Users.dto.UserRequest;
 import com.jobboard.job_board.company.Company;
 import com.jobboard.job_board.company.CompanyRepo;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Null;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
+@Tag(name = "Authentication", description = "Register and login endpoints")
 public class AuthController {
 
     public final UserRepo userRepo;
@@ -30,6 +33,9 @@ public class AuthController {
     public final JwtFilter jwtFilter;
     public final CompanyRepo companyRepo;
 
+
+    @Operation(summary = "Register new user",
+            description = "Register as RECRUITER or APPLICANT")
     @PostMapping("/register")
     public ResponseEntity<AuthResponse> register(@RequestBody UserRequest userRequest){
 
@@ -71,6 +77,9 @@ public class AuthController {
                 users.getRole().name()));
     }
 
+
+    @Operation(summary = "Login",
+            description = "Returns JWT token on success")
     @PostMapping("/login")
     public ResponseEntity<AuthResponse> login(@Valid @RequestBody AuthRequest authRequest){
 

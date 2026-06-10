@@ -5,6 +5,8 @@ import com.jobboard.job_board.job.dto.CursorResponse;
 import com.jobboard.job_board.job.dto.JobPageResponse;
 import com.jobboard.job_board.job.dto.JobRequestDTO;
 import com.jobboard.job_board.job.dto.JobResponseDTO;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -20,11 +22,15 @@ import java.util.List;
 @RestController()
 @RequestMapping("/api/job")
 @RequiredArgsConstructor
+@Tag(name = "Jobs", description = "Job posting and search endpoints")
 public class JobController {
     private final JobService jobService;
 
     // create job
     // RECRUITER only — only recruiters post jobs
+
+    @Operation(summary = "Create job posting",
+            description = "RECRUITER only — post a new job")
     @PreAuthorize("hasRole('RECRUITER')")
     @PostMapping("/add")
     public ResponseEntity<JobResponseDTO> createJob(@Valid @RequestBody JobRequestDTO jobRequestDTO) {
@@ -87,6 +93,8 @@ public class JobController {
 
     //    offset pagination
     //PUBLIC - Anyone can view jobs
+    @Operation(summary = "Get all jobs",
+            description = "Public — paginated job feed")
     @GetMapping("/all")
     public ResponseEntity<JobPageResponse> getAllJobs(@RequestParam(defaultValue = "0") int page,
                                                       @RequestParam(defaultValue = "3") int size,
@@ -97,6 +105,7 @@ public class JobController {
     }
 
     // PUBLIC — anyone can search
+    @Operation(summary = "Search jobs by keyword")
     @GetMapping("/search")
     public ResponseEntity<JobPageResponse> search(@RequestParam String keyword,
                                                   @RequestParam(defaultValue = "0") int page,
@@ -105,6 +114,7 @@ public class JobController {
     }
 
     // PUBLIC — anyone can filter
+    @Operation(summary = "Filter by location")
     @GetMapping("/location")
     public ResponseEntity<JobPageResponse> searchLocation(@RequestParam String location,
                                                           @RequestParam(defaultValue = "0") int page,
@@ -113,6 +123,8 @@ public class JobController {
     }
 
     // PUBLIC — cursor based feed
+    @Operation(summary = "Infinite scroll job feed",
+            description = "Cursor based pagination")
     @GetMapping("/cursor")
     public ResponseEntity<CursorResponse> getJobsCursor(@RequestParam(required = false) Long cursor,
                                                         @RequestParam(defaultValue = "1") int
