@@ -28,12 +28,13 @@ public class ApplicationController {
     @Operation(summary = "Apply to a job",
             description = "APPLICANT only — must have resume uploaded")
     @PreAuthorize("hasRole('APPLICANT')")
-    @PostMapping("/{userId}")
-    public ResponseEntity<ApplicationResponseDto> apply(@PathVariable Long userId, @RequestParam Long jobId) {
+    @PostMapping("/add/job")
+    public ResponseEntity<ApplicationResponseDto> apply(@RequestParam Long jobId,
+                                                        @AuthenticationPrincipal Users current_user) {
 //        String resumeUrl= fileUploadService.uploadResume();
         return ResponseEntity
                 .status(HttpStatus.CREATED)
-                .body(applicationService.applyToJob(userId, jobId));
+                .body(applicationService.applyToJob(current_user.getId(), jobId));
     }
 
     // GET /api/applications/user/1
@@ -41,23 +42,23 @@ public class ApplicationController {
     @Operation(summary = "View my applications",
             description = "APPLICANT only")
     @PreAuthorize("hasRole('APPLICANT')")
-    @GetMapping("/user/{userId}")
-    public ResponseEntity<List<ApplicationResponseDto>> getByUserId(@PathVariable Long userId) {
-        return ResponseEntity.ok(applicationService.getApplicationsByUser(userId));
+    @GetMapping("/my-application")
+    public ResponseEntity<List<ApplicationResponseDto>> getByUserId(@AuthenticationPrincipal Users current_user) {
+        return ResponseEntity.ok(applicationService.getApplicationsByUser(current_user.getId()));
 
     }
 
     // GET /api/applications/job/1
     // applicants for a job
     // RECRUITER only — recruiter views applicants for their job
-//    @Operation(summary = "View applicants for a job",
-//            description = "RECRUITER only — own company jobs only")
-//    @PreAuthorize("hasRole('RECRUITER')")
-//    @GetMapping("/job/{jobId}")
-//    public ResponseEntity<List<ApplicationResponseDto>> getByJobId(@PathVariable Long jobId,
-//                                                                   @AuthenticationPrincipal Users current_user) throws AccessDeniedException {
-//        return ResponseEntity.ok(applicationService.getApplicationsByJob(jobId, current_user.getEmail()));
-//    }
+    @Operation(summary = "View applicants for a job",
+            description = "RECRUITER only — own company jobs only")
+    @PreAuthorize("hasRole('RECRUITER')")
+    @GetMapping("/job/{jobId}")
+    public ResponseEntity<List<ApplicationResponseDto>> getByJobId(@PathVariable Long jobId,
+                                                                   @AuthenticationPrincipal Users current_user) throws AccessDeniedException {
+        return ResponseEntity.ok(applicationService.getApplicationsByJob(jobId, current_user.getEmail()));
+    }
 
     // PATCH /api/applications/1/status?newStatus=SHORTLISTED
     // update status

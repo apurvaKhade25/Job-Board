@@ -192,6 +192,7 @@ public class JobService {
                 .toList();
 
         return JobPageResponse.builder()
+                .jobs(jobs)
                 .currentPage(jobPage.getNumber())
                 .totalPages(jobPage.getTotalPages())
                 .totalJobs(jobPage.getTotalElements())
