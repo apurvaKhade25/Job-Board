@@ -29,7 +29,7 @@ public class JobController {
     // create job
     // RECRUITER only — only recruiters post jobs
 
-    @Operation(summary = "Create job posting",
+    @Operation(summary = "Create job posting (Recruiter)",
             description = "RECRUITER only — post a new job")
     @PreAuthorize("hasRole('RECRUITER')")
     @PostMapping("/add")
@@ -38,6 +38,8 @@ public class JobController {
     }
 
     // RECRUITER only — view their own company's jobs
+    @Operation(summary = "Recruiter view own company job (Recruiter)",
+            description = "RECRUITER only - views their jobs")
     @PreAuthorize("hasRole('RECRUITER')")
     @GetMapping("/my-jobs")
     public ResponseEntity<JobPageResponse> getMyJobs(
@@ -82,6 +84,8 @@ public class JobController {
 
     // Update a job
     // RECRUITER only — only recruiters can uodate job
+    @Operation(summary = "Update job status (Recruiter)",
+            description = "Recruiter updates job status")
     @PreAuthorize("hasRole('RECRUITER')")
     @PatchMapping ("/jobstatus/{id}")
     public ResponseEntity<JobResponseDTO> updateJobByStatus(@PathVariable Long id,@RequestParam JobStatus jobStatus,

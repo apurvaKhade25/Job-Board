@@ -3,6 +3,7 @@ package com.jobboard.job_board.Upload;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -23,7 +24,7 @@ public class FileUploadController {
     @Operation(summary = "Upload resume PDF",
             description = "APPLICANT only — max 5MB PDF")
     @PreAuthorize("hasRole('APPLICANT')")
-    @PostMapping("/resume")
+    @PostMapping(value = "/resume",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity <Map<String,String>> uploadResume(@RequestParam("file") MultipartFile file){
         String resumeUrl= fileUploadService.uploadResume(file);
         return ResponseEntity.ok(Map.of("url",resumeUrl,"message","Resume uploaded successfully"));

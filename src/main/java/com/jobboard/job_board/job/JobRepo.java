@@ -23,7 +23,7 @@ public interface JobRepo extends JpaRepository<Job, Long> {
 //    List<Job> findByTitleContainingIgnoreCase(String keyword);
 
     @EntityGraph(attributePaths = {"company"})
-    Page<Job> findByCompanyId(Long companyId,Pageable pageable);
+    Page<Job> findByCompanyId(Long companyId, Pageable pageable);
 
     long countByLocation(String location);
 
@@ -33,7 +33,8 @@ public interface JobRepo extends JpaRepository<Job, Long> {
     @Query("SELECT j FROM Job j WHERE j.salary >= :minSalary ORDER BY j.salary DESC")
     List<Job> findJobsAboveSalary(@Param("minSalary") BigDecimal minSalary);
 
-    @Query("SELECT j FROM Job j WHERE j.location = :location AND j.salary >= :minSalary")
+    @Query("SELECT j FROM Job j WHERE LOWER(j.location) LIKE LOWER(CONCAT('%',:keyword,'%')) AND j.salary >= " +
+            ":minSalary")
     List<Job> filterJobs(@Param("location") String location, @Param("minSalary") BigDecimal minSalary);
 
     @Query("SELECT j FROM Job j JOIN j.company c WHERE c.name = :name")
@@ -45,18 +46,19 @@ public interface JobRepo extends JpaRepository<Job, Long> {
     // pagination + sorting of all jobs
 
     // pagination + filter by location
-    Page<Job> findByLocation(String  Location,Pageable pageable);
+    @Query("SELECT j FROM Job j WHERE LOWER(j.location) LIKE LOWER(CONCAT('%',:location,'%'))")
+    Page<Job> findByLocation(@Param("location") String Location, Pageable pageable);
 
     // pagination + filter by jobtype
-    Page<Job> findByJobtype(String Jobtype,Pageable pageable);
+    Page<Job> findByJobtype(String Jobtype, Pageable pageable);
 
     // pagination + filter by keyword
-    Page<Job> findByTitleContainingIgnoreCase(String Title,Pageable pageable);
+    Page<Job> findByTitleContainingIgnoreCase(String Title, Pageable pageable);
 
     // pagination + filter by salary
-    Page<Job> findBySalaryGreaterThan(BigDecimal Salary,Pageable pageable);
+    Page<Job> findBySalaryGreaterThan(BigDecimal Salary, Pageable pageable);
 
-//    offset pagination
+    //    offset pagination
     @EntityGraph(attributePaths = {"company"})
     Page<Job> findAll(Pageable pageable);
 
@@ -71,7 +73,6 @@ public interface JobRepo extends JpaRepository<Job, Long> {
 
     // check if more exist
     boolean existsByIdGreaterThan(Long id);
-
 
 
 }

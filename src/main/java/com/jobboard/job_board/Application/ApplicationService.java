@@ -131,6 +131,7 @@ public class ApplicationService {
                 .jobTitle(app.getJob().getTitle())
                 .userId(app.getUsers().getId())
                 .userName(app.getUsers().getFullname())
+                .company(app.getJob().getCompany().getName())
                 .build();
     }
 

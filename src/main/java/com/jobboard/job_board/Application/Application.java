@@ -2,6 +2,7 @@ package com.jobboard.job_board.Application;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.jobboard.job_board.Users.Users;
+import com.jobboard.job_board.company.Company;
 import com.jobboard.job_board.job.Job;
 import jakarta.persistence.*;
 import lombok.*;
