@@ -3,6 +3,7 @@ package com.jobboard.job_board.Users;
 
 import com.jobboard.job_board.Users.dto.UserRequest;
 import com.jobboard.job_board.Users.dto.UserResponse;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import lombok.Builder;
@@ -74,4 +75,30 @@ public class UserService {
         return response;
     }
 
+    public String delete(Long userId, String currentUserEmail) {
+        Users user = userRepo.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found: " + userId));
+
+        if (!user.getEmail().equals(currentUserEmail)) {
+            throw new RuntimeException("You can only delete your own profile");
+        }
+
+        userRepo.deleteById(userId);
+        return "User deleted successfully";
+    }
+
+    public UserResponse update(Long userId, @Valid UserRequest userRequest, String currentUserEmail) {
+        Users user = userRepo.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found: " + userId));
+
+        if (!user.getEmail().equals(currentUserEmail)) {
+            throw new RuntimeException("You can only update your own profile");
+        }
+
+        user.setFullname(userRequest.getFullName());
+        user.setPassword(passwordEncoder.encode(userRequest.getPassword()));
+        user.setRole(userRequest.getRole());
+
+        return touserResponse(userRepo.save(user));
+    }
 }

@@ -1,10 +1,8 @@
-package com.jobboard.job_board;
+package com.jobboard.job_board.job;
 
 
 import com.jobboard.job_board.company.Company;
 import com.jobboard.job_board.company.CompanyRepo;
-import com.jobboard.job_board.job.Job;
-import com.jobboard.job_board.job.JobRepo;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +15,6 @@ import java.math.BigDecimal;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.setExtractBareNamePropertyMethods;
 
 
 @DataJpaTest
