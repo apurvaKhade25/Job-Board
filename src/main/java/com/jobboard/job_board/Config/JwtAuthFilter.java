@@ -1,6 +1,6 @@
 package com.jobboard.job_board.Config;
 
-import com.jobboard.job_board.Auth.JwtFilter;
+import com.jobboard.job_board.Auth.JwtUtil;
 import com.jobboard.job_board.Users.UserRepo;
 import com.jobboard.job_board.Users.Users;
 import jakarta.servlet.FilterChain;
@@ -22,7 +22,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class JwtAuthFilter extends OncePerRequestFilter {
 
-    private final JwtFilter jwtFilter;
+    private final JwtUtil jwtUtil;
     private final UserRepo userRepo;
 
     @Override
@@ -49,7 +49,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
         System.out.println("Token = " + token);
 
-        String email=jwtFilter.extractEmail(token);
+        String email= jwtUtil.extractEmail(token);
 
         System.out.println("Email from token = " + email);
 
@@ -59,12 +59,12 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         if (email!=null && SecurityContextHolder.getContext().getAuthentication()==null){
 
             // 6. load user from DB
-            Users users=userRepo.findByEmail(email).orElse(null);
+            Users users=userRepo.findByEmailWithCompany(email).orElse(null);
 
             // 7. extract role and create authority
-            if (users!=null && jwtFilter.validateToken(token,email)){
+            if (users!=null && jwtUtil.validateToken(token,email)){
                 System.out.println("Token validation SUCCESS");
-                String role= jwtFilter.extractRole(token);
+                String role= jwtUtil.extractRole(token);
                 SimpleGrantedAuthority authority=new SimpleGrantedAuthority("ROLE_"+role);
 
                 // 8. create authentication object

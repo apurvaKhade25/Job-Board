@@ -126,7 +126,7 @@ public class JobService {
     @Transactional(readOnly = true)
     public JobPageResponse getMyJobs(String recruiterEmail, int page, int size, String sortBy, String sortDir) {
         // load recruiter
-        Users recruiter = userRepo.findByEmail(recruiterEmail)
+        Users recruiter = userRepo.findByEmailWithCompany(recruiterEmail)
                 .orElseThrow(() -> new ResourceNotFoundException("Recruiter not found"));
 
         // check recruiter has company
@@ -233,7 +233,7 @@ public class JobService {
 
         Job job = jobRepo.findById(jobId).orElseThrow(() -> new ResourceNotFoundException("Job not found"));
 
-        Users recruiter = userRepo.findByEmail(recruiterEmail).orElseThrow(() -> new ResourceNotFoundException("No " +
+        Users recruiter = userRepo.findByEmailWithCompany(recruiterEmail).orElseThrow(() -> new ResourceNotFoundException("No " +
                 "recruiter found"));
 
         if (!job.getCompany().getId().equals(recruiter.getCompany().getId())) {
@@ -256,6 +256,7 @@ public class JobService {
         responseDTO.setJobType(j.getJobtype());
         responseDTO.setCompanyName(j.getCompany().getName());
         responseDTO.setCompanyId(j.getCompany().getId());
+        responseDTO.setJobStatus(j.getJobStatus().name());
         return responseDTO;
 
     }

@@ -19,4 +19,15 @@ public class UserResponse {
     private String fullName;
 
     private Role role;
+
+    private String resumeUrl;
+
+    // if RECRUITER → provide company details
+    // if APPLICANT → leave null
+    private Long companyId;
+    private String companyName;
+    private String companyEmail;
+    private String companyWebsite;
+    private String companyLocation;
+    private String companyDescription;
 }

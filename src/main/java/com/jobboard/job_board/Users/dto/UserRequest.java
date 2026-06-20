@@ -25,7 +25,7 @@ public class UserRequest {
     private Role role;
 
     //optional
-    private MultipartFile resumeUrl;
+//    private MultipartFile resumeUrl;
 
 
     // if RECRUITER → provide company details

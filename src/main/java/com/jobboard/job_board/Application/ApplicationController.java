@@ -81,9 +81,4 @@ public class ApplicationController {
         return ResponseEntity.noContent().build();
     }
 
-    // Testing purpose
-    @GetMapping("/all")
-    public ResponseEntity<List<ApplicationResponseDto>> getAll() {
-        return ResponseEntity.ok(applicationService.getHistory());
-    }
 }

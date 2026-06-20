@@ -32,7 +32,7 @@ public class SecurityConfig {
     // ── 1. UserDetailsService ──────────────────
     @Bean
     public UserDetailsService userDetailsService() {
-        return email -> userRepo.findByEmail(email)
+        return email -> userRepo.findByEmailWithCompany(email)
                 .map(user -> org.springframework.security.core.userdetails.User
                         .withUsername(user.getEmail())
                         .password(user.getPassword())

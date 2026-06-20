@@ -1,16 +1,16 @@
 package com.jobboard.job_board.Users;
 
 import com.jobboard.job_board.Upload.FileUploadService;
-import com.jobboard.job_board.Users.dto.UserRequest;
+import com.jobboard.job_board.Users.dto.CompanyUpdateRequest;
 import com.jobboard.job_board.Users.dto.UserResponse;
+import com.jobboard.job_board.Users.dto.UserUpdateRequest;
+import com.jobboard.job_board.company.Dto.CompanyResponse;
 import io.swagger.v3.oas.annotations.Operation;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.boot.autoconfigure.security.servlet.UserDetailsServiceAutoConfiguration;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -22,14 +22,6 @@ import java.util.List;
 public class UserController {
     private final UserService userService;
     private final FileUploadService fileUploadService;
-
-    // create user
-    @Operation(summary = "Create user profile (Recruiter & Applicant)",
-            description = "RECRUITER & APPLICANT - Creates a new user profile")
-    @PostMapping("/add")
-    public ResponseEntity<UserResponse> CreateUser(@Valid @RequestBody UserRequest userRequest) {
-        return ResponseEntity.ok(userService.CreateUser(userRequest));
-    }
 
     // get user by id
     // both roles — any logged in user views profile
@@ -47,7 +39,6 @@ public class UserController {
     @PostMapping(value = "/uploadResume", consumes = {"multipart/form-data"})
     public ResponseEntity<UserResponse> getResume(@RequestParam MultipartFile file,
                                                   @AuthenticationPrincipal Users current_users) {
-        String email = current_users.getEmail();
 
         String resumeUrl = fileUploadService.uploadResume(file);
         return ResponseEntity.ok(userService.uploadResume(current_users.getEmail(), resumeUrl));
@@ -68,22 +59,46 @@ public class UserController {
     @Operation(summary = "Delete user profile (Recruiter & Applicant)",
             description = "RECRUITER & APPLICANT - Deletes their own profile")
     @PreAuthorize("hasAnyRole('RECRUITER', 'APPLICANT')")
-    @DeleteMapping("/delete/{id}")
-    public ResponseEntity<String> delete(@PathVariable("id") Long user_id) {
+    @DeleteMapping("/delete")
+    public ResponseEntity<String> delete(@AuthenticationPrincipal Users current_users) {
         // Get the currently authenticated user's email
-        String currentUserEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+//        String currentUserEmail = SecurityContextHolder.getContext().getAuthentication().getName();
 
-        return ResponseEntity.ok(userService.delete(user_id, currentUserEmail));
+        return ResponseEntity.ok(userService.delete(current_users.getId()));
     }
 
+    // see my profile
+    // both roles — any logged in user views their own profile
+    @Operation(summary = "View my profile (Recruiter & Applicant)",
+            description = "RECRUITER & APPLICANT - Views their own profile")
+    @PreAuthorize("hasAnyRole('RECRUITER', 'APPLICANT')")
+    @GetMapping("/me")
+    public ResponseEntity<UserResponse> getMyProfile(@AuthenticationPrincipal Users current_users) {
+        return ResponseEntity.ok(userService.touserResponse(current_users));
+    }
+
+    // update user profile
+    // both roles — any logged in user can update their own profile
+    @Transactional
     @Operation(summary = "Update user profile (Recruiter & Applicant)",
             description = "RECRUITER & APPLICANT - Updates their own profile")
     @PreAuthorize("hasAnyRole('RECRUITER', 'APPLICANT')")
-    @PutMapping("/update/{id}")
-    public ResponseEntity<UserResponse> update(@PathVariable("id") Long user_id,
-                                               @Valid @RequestBody UserRequest userRequest) {
-        // Get the currently authenticated user's email
-        String currentUserEmail = SecurityContextHolder.getContext().getAuthentication().getName();
-        return ResponseEntity.ok(userService.update(user_id, userRequest, currentUserEmail));
+    @PutMapping("/update")
+    public ResponseEntity <UserResponse> updateUser(@RequestBody UserUpdateRequest userUpdateRequest,
+                                                   @AuthenticationPrincipal Users current_users) {
+        return ResponseEntity.ok(userService.update(current_users.getId(), userUpdateRequest));
+    }
+
+
+    // update company details for recruiter
+    @Transactional
+    @Operation(summary = "Update company details (Recruiter)",
+            description = "RECRUITER - Updates their company details")
+
+    @PreAuthorize("hasRole('RECRUITER')")
+    @PutMapping("/update/company")
+    public ResponseEntity <CompanyResponse> updateCompany(@RequestBody CompanyUpdateRequest companyUpdateRequest,
+                                                          @AuthenticationPrincipal Users current_users) {
+        return ResponseEntity.ok(userService.updateCompany(current_users.getId(), companyUpdateRequest));
     }
 }

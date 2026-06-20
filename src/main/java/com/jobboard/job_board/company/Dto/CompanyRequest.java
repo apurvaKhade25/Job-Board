@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 public class CompanyRequest {
     @NotBlank(message = "Name cannot be empty")
     private String name;
-    @NotBlank(message = "Email cannot be empty")
+//    @NotBlank(message = "Email cannot be empty")
     private String email;
     private String website;
     private String location;

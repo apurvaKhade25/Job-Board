@@ -1,10 +1,13 @@
 package com.jobboard.job_board.company;
 
 import com.jobboard.job_board.Exception.ResourceNotFoundException;
+import com.jobboard.job_board.Users.UserRepo;
+import com.jobboard.job_board.Users.Users;
 import com.jobboard.job_board.company.Dto.CompanyRequest;
 import com.jobboard.job_board.company.Dto.CompanyResponse;
 import lombok.Builder;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,6 +19,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class CompanyService {
     private final CompanyRepo companyRepo;
+    private final UserRepo userRepo;
 
     //create company
     public CompanyResponse createCompany(CompanyRequest request) {
@@ -46,16 +50,21 @@ public class CompanyService {
                 .toList();
     }
 
-    //delete
+//    delete
+    @Transactional
     public void deleteCompany(Long id) {
         if (!companyRepo.existsById(id)) {
             throw new ResourceNotFoundException("Company not found with id: " + id);
+        }
+        List <Users> users = userRepo.findByCompanyId(id);
+        if (!users.isEmpty()) {
+            throw new IllegalStateException("Cannot delete company with associated users.");
         }
         companyRepo.deleteById(id);
     }
 
 
-    private CompanyResponse toResponse(Company c) {
+    public CompanyResponse toResponse(Company c) {
         CompanyResponse response = new CompanyResponse();
         response.setId(c.getId());
         response.setName(c.getName());

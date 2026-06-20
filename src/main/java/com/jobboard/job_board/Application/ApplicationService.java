@@ -84,7 +84,7 @@ public class ApplicationService {
     public List<ApplicationResponseDto> getApplicationsByJob(Long jobId, String recruiter_email) throws AccessDeniedException {
 
         //load recruiter
-        Users recruiter = usersRepo.findByEmail(recruiter_email).orElseThrow(() -> new ResourceNotFoundException(
+        Users recruiter = usersRepo.findByEmailWithCompany(recruiter_email).orElseThrow(() -> new ResourceNotFoundException(
                 "Recruiter not found" + recruiter_email));
 
         // load job
@@ -114,11 +114,6 @@ public class ApplicationService {
         applicationRepo.deleteById(applicationId);
     }
 
-    // get all applications
-    public List<ApplicationResponseDto> getHistory() {
-        return applicationRepo.findAll().stream().map(this::mapToDto).toList();
-    }
-
 
     //dto mapper
     private ApplicationResponseDto mapToDto(Application app) {
@@ -131,7 +126,7 @@ public class ApplicationService {
                 .jobTitle(app.getJob().getTitle())
                 .userId(app.getUsers().getId())
                 .userName(app.getUsers().getFullname())
-                .company(app.getJob().getCompany().getName())
+                .companyName(app.getJob().getCompany().getName())
                 .build();
     }
 

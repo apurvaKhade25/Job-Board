@@ -14,4 +14,5 @@ public class JobResponseDTO {
     private String jobType;
     private Long companyId;
     private String companyName;
+    private String jobStatus;
 }

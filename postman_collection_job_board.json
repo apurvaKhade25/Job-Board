@@ -1,0 +1,205 @@
+{
+  "info": {
+    "_postman_id": "job-board-collection-001",
+    "name": "Job Board API - Full Tests",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": "Collection to exercise key endpoints and edge-cases for the Job Board API. Replace {{HOST}} with your server base URL (e.g. http://localhost:8080)."
+  },
+  "item": [
+    {
+      "name": "Auth/Register Recruiter",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"recruiter1@example.com\",\n  \"password\": \"Pass123!\",\n  \"fullName\": \"Recruiter One\",\n  \"role\": \"RECRUITER\",\n  \"companyName\": \"Acme Corp\",\n  \"companyEmail\": \"hr@acme.example\",\n  \"companyWebsite\": \"https://acme.example\",\n  \"companyLocation\": \"Pune\",\n  \"companyDescription\": \"Acme makes gadgets\"\n}"
+        },
+        "url": "{{HOST}}/api/auth/register"
+      },
+      "response": []
+    },
+    {
+      "name": "Auth/Login Recruiter (valid)",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"recruiter1@example.com\",\n  \"password\": \"Pass123!\"\n}"
+        },
+        "url": "{{HOST}}/api/auth/login"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Login returns 200', function () { pm.response.to.have.status(200); });",
+              "var json = {};",
+              "try { json = pm.response.json(); } catch(e) { json = {}; }",
+              "pm.test('Token present', function () { pm.expect(json.token).to.be.a('string'); });",
+              "if (json.token) { pm.environment.set('RECRUITER1_TOKEN', json.token); }"
+            ]
+          }
+        }
+      ],
+      "response": []
+    },
+    {
+      "name": "Auth/Login Recruiter (invalid password) - SHOULD FAIL",
+      "request": {
+        "method": "POST",
+        "header": [ { "key": "Content-Type", "value": "application/json" } ],
+        "body": { "mode": "raw", "raw": "{\n  \"email\": \"recruiter1@example.com\",\n  \"password\": \"WrongPass!\"\n}" },
+        "url": "{{HOST}}/api/auth/login"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "// This test should fail if the server returns a token for an invalid password",
+              "var json = {}; try { json = pm.response.json(); } catch(e) { json = {}; }",
+              "pm.test('Invalid login should not return 200', function () { pm.expect(pm.response.code === 200).to.not.be.ok; });",
+              "pm.test('No token should be present', function () { pm.expect(json.token).to.be.undefined; });"
+            ]
+          }
+        }
+      ],
+      "response": []
+    },
+    {
+      "name": "Auth/Register Applicant",
+      "request": {
+        "method": "POST",
+        "header": [ { "key": "Content-Type", "value": "application/json" } ],
+        "body": { "mode": "raw", "raw": "{\n  \"email\": \"applicant1@example.com\",\n  \"password\": \"Applicant1!\",\n  \"fullName\": \"Applicant One\",\n  \"role\": \"APPLICANT\"\n}" },
+        "url": "{{HOST}}/api/auth/register"
+      }
+    },
+    {
+      "name": "Auth/Login Applicant",
+      "request": {
+        "method": "POST",
+        "header": [ { "key": "Content-Type", "value": "application/json" } ],
+        "body": { "mode": "raw", "raw": "{\n  \"email\": \"applicant1@example.com\",\n  \"password\": \"Applicant1!\"\n}" },
+        "url": "{{HOST}}/api/auth/login"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": { "exec": [
+            "pm.test('Applicant login returns 200', function () { pm.response.to.have.status(200); });",
+            "var json = {}; try { json = pm.response.json(); } catch(e) { json = {}; }",
+            "pm.test('Applicant token present', function () { pm.expect(json.token).to.be.a('string'); });",
+            "if (json.token) { pm.environment.set('APPLICANT1_TOKEN', json.token); }"
+          ] }
+        }
+      ]
+    },
+    {
+      "name": "Company/Create",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "Authorization", "value": "Bearer {{RECRUITER1_TOKEN}}" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"NewCo\",\n  \"email\": \"contact@newco.example\",\n  \"website\": \"https://newco.example\",\n  \"location\": \"Remote\"\n}"
+        },
+        "url": "{{HOST}}/api/companies"
+      },
+      "event": [ { "listen": "test", "script": { "exec": [
+        "pm.test('Create company returns 201', function () { pm.response.to.have.status(201); });",
+        "var json = {}; try { json = pm.response.json(); } catch(e) { json = {}; }",
+        "if (json.id) { pm.environment.set('COMPANY_ID', json.id); }"
+      ] } } ]
+    },
+    {
+      "name": "Company/Get by id",
+      "request": { "method": "GET", "url": "{{HOST}}/api/companies/{{COMPANY_ID}}" },
+      "event": [ { "listen": "test", "script": { "exec": [ "pm.test('Get company returns 200', function () { pm.response.to.have.status(200); });" ] } } ]
+    },
+    {
+      "name": "Job/Create",
+      "request": {
+        "method": "POST",
+        "header": [ { "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{RECRUITER1_TOKEN}}" } ],
+        "body": { "mode": "raw", "raw": "{\n  \"title\": \"Backend Engineer\",\n  \"description\": \"Build REST services using Spring Boot\",\n  \"location\": \"Pune / Remote\",\n  \"salary\": 80000,\n  \"jobType\": \"Full-time\",\n  \"companyId\": {{COMPANY_ID}}\n}" },
+        "url": "{{HOST}}/api/job/add"
+      },
+      "event": [ { "listen": "test", "script": { "exec": [
+        "pm.test('Create job returns 201', function () { pm.response.to.have.status(201); });",
+        "var json = {}; try { json = pm.response.json(); } catch(e) { json = {}; }",
+        "if (json.id) { pm.environment.set('JOB_ID', json.id); }"
+      ] } } ]
+    },
+    {
+      "name": "Users/Upload Resume (persist) - Applicant",
+      "request": {
+        "method": "POST",
+        "header": [ { "key": "Authorization", "value": "Bearer {{APPLICANT1_TOKEN}}" } ],
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            { "key": "file", "type": "file", "src": "/path/to/sample_resume.pdf" }
+          ]
+        },
+        "url": "{{HOST}}/api/users/uploadResume"
+      },
+      "event": [ { "listen": "test", "script": { "exec": [
+        "pm.test('Upload resume returns 200', function () { pm.response.to.have.status(200); });",
+        "var json = {}; try { json = pm.response.json(); } catch(e) { json = {}; }",
+        "if (json.resumeUrl) { pm.environment.set('RESUME_URL', json.resumeUrl); }"
+      ] } } ]
+    },
+    {
+      "name": "Applications/Apply to Job (applicant)",
+      "request": {
+        "method": "POST",
+        "header": [ { "key": "Authorization", "value": "Bearer {{APPLICANT1_TOKEN}}" } ],
+        "url": "{{HOST}}/api/applications/add/job?jobId={{JOB_ID}}"
+      },
+      "event": [ { "listen": "test", "script": { "exec": [
+        "pm.test('Apply returns 201', function () { pm.response.to.have.status(201); });",
+        "var json = {}; try { json = pm.response.json(); } catch(e) { json = {}; }",
+        "if (json.id) { pm.environment.set('APPLICATION_ID', json.id); }"
+      ] } } ]
+    },
+    {
+      "name": "Applications/Get my applications (applicant)",
+      "request": { "method": "GET", "header": [ { "key": "Authorization", "value": "Bearer {{APPLICANT1_TOKEN}}" } ], "url": "{{HOST}}/api/applications/my-application" },
+      "event": [ { "listen": "test", "script": { "exec": [ "pm.test('Get my applications returns 200', function () { pm.response.to.have.status(200); });" ] } } ]
+    },
+    {
+      "name": "Applications/Get applicants for job (recruiter)",
+      "request": { "method": "GET", "header": [ { "key": "Authorization", "value": "Bearer {{RECRUITER1_TOKEN}}" } ], "url": "{{HOST}}/api/applications/job/{{JOB_ID}}" },
+      "event": [ { "listen": "test", "script": { "exec": [ "pm.test('Get applicants returns 200', function () { pm.response.to.have.status(200); });" ] } } ]
+    },
+    {
+      "name": "Applications/Update status (recruiter)",
+      "request": {
+        "method": "PATCH",
+        "header": [ { "key": "Authorization", "value": "Bearer {{RECRUITER1_TOKEN}}" } ],
+        "url": "{{HOST}}/api/applications/{{APPLICATION_ID}}/status?newStatus=SHORTLISTED"
+      },
+      "event": [ { "listen": "test", "script": { "exec": [ "pm.test('Update status returns 200', function () { pm.response.to.have.status(200); });" ] } } ]
+    }
+  ],
+  "variable": [
+    { "key": "HOST", "value": "http://localhost:8080" },
+    { "key": "RECRUITER1_TOKEN", "value": "" },
+    { "key": "APPLICANT1_TOKEN", "value": "" },
+    { "key": "COMPANY_ID", "value": "" },
+    { "key": "JOB_ID", "value": "" },
+    { "key": "RESUME_URL", "value": "" },
+    { "key": "APPLICATION_ID", "value": "" }
+  ]
+}

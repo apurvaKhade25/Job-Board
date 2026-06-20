@@ -125,7 +125,6 @@ class JobServiceTest {
 
         verify(jobRepo, times(1)).findById(1L);
     }
-
 }
 
 
